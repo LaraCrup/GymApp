@@ -53,7 +53,7 @@ async function submit() {
   </form>
 
   <div class="mt-6 flex flex-col items-center gap-4 text-center">
-    <AppButton variant="ghost" to="/recuperar">Me olvidé la contraseña</AppButton>
+    <AppButton variant="ghost" :to="{ path: '/recuperar', query: email.trim() ? { email: email.trim() } : {} }">Me olvidé la contraseña</AppButton>
     <p class="text-sm text-muted">¿No tenés cuenta? Pedile a {{ adminName }} que te invite.</p>
   </div>
 </template>
