@@ -9,7 +9,7 @@ defineEmits<{ settings: []; up: []; down: []; remove: [] }>()
 <template>
   <article class="flex flex-col gap-3 rounded-2xl bg-white p-3">
     <div class="flex items-center gap-3">
-      <NuxtLink :to="`/ejercicios/${item.exercise.id}`" class="flex min-w-0 flex-1 items-center gap-3">
+      <NuxtLink :to="{ path: `/ejercicios/${item.exercise.id}`, query: { rutina: item.routine_id } }" class="flex min-w-0 flex-1 items-center gap-3">
         <ExerciseThumb :youtube-id="item.exercise.youtube_id" />
         <span class="min-w-0 flex-1 font-semibold">{{ item.exercise.name }}</span>
       </NuxtLink>

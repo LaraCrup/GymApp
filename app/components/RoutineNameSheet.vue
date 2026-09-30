@@ -27,6 +27,8 @@ function submit() {
         label="Nombre de la rutina"
         autocomplete="off"
         placeholder="Ej: Día 1 - Piernas"
+        enterkeyhint="done"
+        autofocus
         :error="localError"
       />
       <ErrorBox :message="error" />

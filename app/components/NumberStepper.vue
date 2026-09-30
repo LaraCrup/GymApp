@@ -46,6 +46,8 @@ function commit() {
           autocomplete="off"
           class="min-h-12 w-full rounded-xl border-2 border-line bg-white px-3 text-center text-base font-semibold outline-none focus:border-primary"
           :class="{ 'pr-10': unit }"
+          enterkeyhint="done"
+          @focus="($event.target as HTMLInputElement).select()"
           @blur="commit"
           @keydown.enter.prevent="commit"
         >

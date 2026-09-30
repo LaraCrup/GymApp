@@ -46,4 +46,38 @@
   dialog::backdrop {
     background: rgb(15 23 42 / 0.6);
   }
+
+  /* Con un panel abierto, la pantalla de atrás no se desliza bajo el dedo. */
+  html:has(dialog[open]) {
+    overflow: hidden;
+  }
+
+  /* Entrada suave: el panel sube desde abajo, el diálogo aparece; el fondo se oscurece. */
+  dialog[open] {
+    animation: aparecer 0.18s ease-out;
+  }
+  dialog[open].panel {
+    animation-name: subir;
+    animation-duration: 0.24s;
+  }
+  dialog[open]::backdrop {
+    animation: oscurecer 0.2s ease-out;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after, dialog[open]::backdrop {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+@keyframes subir {
+  from { transform: translateY(100%); }
+}
+@keyframes aparecer {
+  from { opacity: 0; transform: scale(0.96); }
+}
+@keyframes oscurecer {
+  from { opacity: 0; }
 }

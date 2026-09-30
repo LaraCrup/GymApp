@@ -40,9 +40,16 @@ async function save() {
 }
 
 // Un solo lugar avisa del error, venga del guardado automático o de un reintento.
+// "Guardado" se ve un momento y se va: con toda la rutina anotada no quedan tildes por todos lados.
+const savedVisible = ref(false)
+let savedTimer: ReturnType<typeof setTimeout> | undefined
 watch(status, s => {
+  clearTimeout(savedTimer)
+  savedVisible.value = s === 'saved'
+  if (s === 'saved') savedTimer = setTimeout(() => (savedVisible.value = false), 3000)
   if (s === 'error') toast.error(`No se guardó el peso de ${props.exerciseName}. Revisá la conexión y tocá «Reintentar».`)
 })
+onBeforeUnmount(() => clearTimeout(savedTimer))
 
 const id = useId()
 const stepLabel = (s: number) => `${s > 0 ? '+' : '−'}${formatNumber(Math.abs(s))}`
@@ -61,6 +68,8 @@ const stepLabel = (s: number) => `${s > 0 ? '+' : '−'}${formatNumber(Math.abs(
             inputmode="decimal"
             autocomplete="off"
             class="min-h-14 w-full rounded-xl border-2 border-line bg-white pr-7 pl-2 text-center text-lg font-bold outline-none focus:border-primary"
+            enterkeyhint="done"
+            @focus="($event.target as HTMLInputElement).select()"
             @blur="commit"
             @keydown.enter.prevent="($event.target as HTMLInputElement).blur()"
           >
@@ -84,7 +93,7 @@ const stepLabel = (s: number) => `${s > 0 ? '+' : '−'}${formatNumber(Math.abs(
       </span>
       <span role="status" class="shrink-0 font-semibold">
         <span v-if="status === 'pending' || status === 'saving'" class="text-muted">Guardando…</span>
-        <span v-else-if="status === 'saved'" class="flex items-center gap-1 text-ok"><AppIcon name="check" :size="14" />Guardado</span>
+        <span v-else-if="savedVisible" class="flex items-center gap-1 text-ok"><AppIcon name="check" :size="14" />Guardado</span>
         <button v-else-if="status === 'error'" type="button" class="min-h-12 rounded-lg px-2 text-danger underline" @click="save">
           No se guardó · Reintentar
         </button>

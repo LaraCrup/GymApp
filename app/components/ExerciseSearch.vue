@@ -7,6 +7,8 @@ const props = defineProps<{
   stateKey: string
   /** A dónde lleva "Crear ejercicio nuevo"; recibe lo que se buscó. */
   createTo: (q: string) => RouteLocationRaw
+  /** Ejercicios que ya están en la rutina: se marcan en la lista. */
+  addedIds?: string[]
 }>()
 defineEmits<{ select: [exercise: Exercise] }>()
 
@@ -60,7 +62,19 @@ onBeforeUnmount(() => clearTimeout(timer))
       inputmode="search"
       autocomplete="off"
       placeholder="Buscá por cualquier nombre…"
-    />
+      enterkeyhint="search"
+    >
+      <template v-if="q" #after>
+        <button
+          type="button"
+          class="flex min-h-12 w-12 shrink-0 items-center justify-center rounded-xl border-2 border-line bg-white text-muted active:bg-surface"
+          aria-label="Borrar búsqueda"
+          @click="q = ''"
+        >
+          <AppIcon name="close" :size="20" />
+        </button>
+      </template>
+    </AppInput>
     <MuscleGroupChips v-model="groupId" />
 
     <ErrorBox :message="error" />
@@ -70,9 +84,9 @@ onBeforeUnmount(() => clearTimeout(timer))
       <p v-if="!results.length" class="py-4 text-center text-sm text-muted">
         No encontramos {{ q ? `«${q}»` : 'ejercicios' }}{{ groupId ? ` en ${muscleGroups.nameOf(groupId)}` : '' }}.
       </p>
-      <ul v-else class="flex flex-col gap-2" :aria-busy="loading">
+      <ul v-else class="flex flex-col gap-2 transition-opacity" :class="{ 'opacity-60': loading }" :aria-busy="loading">
         <li v-for="exercise in results" :key="exercise.id">
-          <ExerciseListItem :exercise="exercise" @select="$emit('select', exercise)" />
+          <ExerciseListItem :exercise="exercise" :added="addedIds?.includes(exercise.id)" @select="$emit('select', exercise)" />
         </li>
       </ul>
     </template>

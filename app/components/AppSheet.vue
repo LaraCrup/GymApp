@@ -1,5 +1,6 @@
 <script setup lang="ts">
 // Panel que sube desde abajo (cerca del pulgar). Usa <dialog> nativo: foco, Escape y "atrás" gratis.
+// Se abre después de dibujar el contenido, así un campo con `autofocus` recibe el foco (y el teclado).
 const open = defineModel<boolean>('open', { required: true })
 defineProps<{ title: string }>()
 
@@ -8,7 +9,7 @@ const dialog = ref<HTMLDialogElement>()
 watch(open, value => {
   if (value && !dialog.value?.open) dialog.value?.showModal()
   if (!value && dialog.value?.open) dialog.value.close()
-})
+}, { flush: 'post' })
 onMounted(() => {
   if (open.value) dialog.value?.showModal()
 })
@@ -18,7 +19,7 @@ onMounted(() => {
   <dialog
     ref="dialog"
     :aria-label="title"
-    class="mx-auto mt-auto mb-0 max-h-[90dvh] w-full max-w-xl overflow-y-auto rounded-t-2xl bg-white p-0 text-ink shadow-xl"
+    class="panel mx-auto mt-auto mb-0 max-h-[90dvh] w-full max-w-xl overflow-y-auto rounded-t-2xl bg-white p-0 text-ink shadow-xl"
     @close="open = false"
     @click.self="open = false"
   >

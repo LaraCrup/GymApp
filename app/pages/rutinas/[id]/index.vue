@@ -33,6 +33,7 @@ watch(
       previous.value = new Map()
     }
   },
+  { immediate: true },
 )
 const editing = ref(false)
 const grouped = useLocalPref('agrupar-por-musculo', false)
@@ -165,7 +166,19 @@ async function removeRoutine() {
 </script>
 
 <template>
-  <AppHeader :title="routine?.name ?? 'Rutina'" back="/" />
+  <AppHeader :title="routine?.name ?? 'Rutina'" back="/">
+    <!-- Arriba también: con una lista larga no hace falta bajar hasta el final para salir. -->
+    <template v-if="editing" #action>
+      <button
+        type="button"
+        class="flex min-h-12 shrink-0 items-center gap-1 rounded-xl px-3 font-semibold text-primary active:bg-primary-soft"
+        @click="editing = false"
+      >
+        <AppIcon name="check" :size="20" />
+        Listo
+      </button>
+    </template>
+  </AppHeader>
 
   <AppLoading v-if="status === 'pending' && !routine" />
   <div v-else-if="error" class="flex flex-col gap-3 p-4">

@@ -9,10 +9,11 @@ const items: { to: string; label: string; icon: IconName }[] = [
 
 const route = useRoute()
 
-// "Mis rutinas" queda marcada también dentro de /rutinas/...
+// "Mis rutinas" queda marcada también dentro de /rutinas/... y en un ejercicio abierto desde una rutina.
+const fromRoutine = computed(() => typeof route.query.rutina === 'string' && route.path.startsWith('/ejercicios/'))
 function isActive(to: string) {
-  if (to === '/') return route.path === '/' || route.path.startsWith('/rutinas')
-  return route.path.startsWith(to)
+  if (to === '/') return route.path === '/' || route.path.startsWith('/rutinas') || fromRoutine.value
+  return route.path.startsWith(to) && !(to === '/ejercicios' && fromRoutine.value)
 }
 </script>
 

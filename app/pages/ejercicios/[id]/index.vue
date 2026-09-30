@@ -3,6 +3,9 @@ useHead({ title: 'Ejercicio' })
 
 const route = useRoute()
 const id = route.params.id as string
+// Abierto desde una rutina: "Volver" regresa ahí y no al catálogo.
+const fromRoutine = typeof route.query.rutina === 'string' ? route.query.rutina : null
+const backTo = fromRoutine ? `/rutinas/${fromRoutine}` : '/ejercicios'
 
 const catalog = useCatalog()
 const muscleGroups = useMuscleGroups()
@@ -14,6 +17,20 @@ const { data: exercise, status, error } = useLazyAsyncData(`exercise-${id}`, asy
   await muscleGroups.load()
   return catalog.get(id)
 })
+
+// ── Agregar a una rutina: se elige cuál y se sigue en su pantalla de agregar ──
+const routines = useRoutines()
+const pickerOpen = ref(false)
+const { data: myRoutines, status: routinesStatus, error: routinesError, execute: loadRoutines } = useLazyAsyncData(
+  `exercise-routines-${id}`,
+  () => routines.list(),
+  { immediate: false },
+)
+
+function openPicker() {
+  pickerOpen.value = true
+  void loadRoutines()
+}
 
 const deleting = ref(false)
 
@@ -42,7 +59,7 @@ async function remove() {
 </script>
 
 <template>
-  <AppHeader title="Ejercicio" back="/ejercicios" />
+  <AppHeader title="Ejercicio" :back="backTo" />
 
   <AppLoading v-if="status === 'pending'" />
   <div v-else-if="error" class="p-4"><ErrorBox :message="friendlyError(error)" /></div>
@@ -70,6 +87,11 @@ async function remove() {
       <p class="mt-1">{{ exercise.aliases.join(' · ') }}</p>
     </section>
 
+    <AppButton v-if="!fromRoutine" block @click="openPicker">
+      <AppIcon name="plus" :size="20" />
+      Agregar a una rutina
+    </AppButton>
+
     <WeightProgress :exercise-id="exercise.id" />
 
     <div v-if="isAdmin" class="flex flex-col gap-3 border-t border-line pt-4">
@@ -84,4 +106,24 @@ async function remove() {
       </AppButton>
     </div>
   </article>
+
+  <AppSheet v-model:open="pickerOpen" title="¿A qué rutina?">
+    <AppLoading v-if="routinesStatus === 'pending' && !myRoutines" />
+    <ErrorBox v-else-if="routinesError" :message="friendlyError(routinesError)" />
+    <template v-else-if="!myRoutines?.length">
+      <p class="text-sm text-muted">Todavía no tenés rutinas. Creá una desde «Mis rutinas» y después agregale ejercicios.</p>
+      <AppButton variant="secondary" block to="/">Ir a mis rutinas</AppButton>
+    </template>
+    <ul v-else class="flex flex-col gap-2">
+      <li v-for="r in myRoutines" :key="r.id">
+        <NuxtLink
+          :to="`/rutinas/${r.id}/agregar?ejercicio=${id}`"
+          class="flex min-h-14 items-center gap-3 rounded-xl border-2 border-line px-4 active:bg-primary-soft"
+        >
+          <span class="min-w-0 flex-1 truncate font-semibold">{{ r.name }}</span>
+          <AppIcon name="chevron" :size="20" class="text-muted" />
+        </NuxtLink>
+      </li>
+    </ul>
+  </AppSheet>
 </template>

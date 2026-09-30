@@ -2,10 +2,12 @@
 const { pending, answer } = useConfirm()
 const dialog = ref<HTMLDialogElement>()
 
+// Después de dibujar los botones, para que el foco caiga en "No, volver" (autofocus):
+// un Enter o un toque apurado nunca confirma un borrado.
 watch(pending, value => {
   if (value) dialog.value?.showModal()
   else dialog.value?.close()
-})
+}, { flush: 'post' })
 </script>
 
 <template>
@@ -24,7 +26,7 @@ watch(pending, value => {
         <AppButton :variant="pending.danger ? 'danger' : 'primary'" block @click="answer(true)">
           {{ pending.confirmLabel ?? 'Sí, confirmar' }}
         </AppButton>
-        <AppButton variant="secondary" block @click="answer(false)">
+        <AppButton variant="secondary" block autofocus @click="answer(false)">
           {{ pending.cancelLabel ?? 'No, volver' }}
         </AppButton>
       </div>

@@ -39,6 +39,13 @@ watch(
 )
 onBeforeUnmount(() => clearTimeout(timer))
 
+// Desde una rutina, elegir un parecido lo abre para agregarlo; si no, lleva a su ficha.
+function openSimilar(exerciseId: string) {
+  return routineId
+    ? navigateTo(`/rutinas/${routineId}/agregar?ejercicio=${exerciseId}`, { replace: true })
+    : navigateTo(`/ejercicios/${exerciseId}`)
+}
+
 // ── Guardar ──
 const saving = ref(false)
 const error = ref('')
@@ -80,10 +87,13 @@ async function save(input: ExerciseInput) {
           <h2 class="text-sm font-semibold text-primary-strong">¿Es alguno de estos? Ya están en el catálogo:</h2>
           <ul class="flex flex-col gap-2">
             <li v-for="s in similar.slice(0, 3)" :key="s.id">
-              <ExerciseListItem :exercise="s" @select="navigateTo(`/ejercicios/${s.id}`)" />
+              <ExerciseListItem :exercise="s" @select="openSimilar(s.id)" />
             </li>
           </ul>
-          <p class="text-xs text-muted">Si no es ninguno, seguí completando y crealo.</p>
+          <p class="text-xs text-muted">
+            {{ routineId ? 'Tocá uno para agregarlo a tu rutina.' : '' }}
+            Si no es ninguno, seguí completando y crealo.
+          </p>
         </section>
       </template>
     </ExerciseForm>

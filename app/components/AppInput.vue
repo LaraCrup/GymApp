@@ -9,8 +9,11 @@ defineProps<{
   autocomplete?: string
   inputmode?: HTMLAttributes['inputmode']
   placeholder?: string
+  enterkeyhint?: HTMLAttributes['enterKeyHint']
   hint?: string
   error?: string
+  /** Toma el foco al abrirse el panel que lo contiene. */
+  autofocus?: boolean
   /** Oculta la etiqueta visualmente (sigue disponible para lectores de pantalla). */
   hideLabel?: boolean
 }>()
@@ -31,6 +34,8 @@ const id = useId()
         :autocomplete="autocomplete"
         :inputmode="inputmode"
         :placeholder="placeholder"
+        :enterkeyhint="enterkeyhint"
+        :autofocus="autofocus"
         :aria-invalid="error ? true : undefined"
         :aria-describedby="[hint && `${id}-hint`, error && `${id}-error`].filter(Boolean).join(' ') || undefined"
         class="min-h-12 w-full min-w-0 rounded-xl border-2 bg-white px-4 text-base outline-none focus:border-primary"
