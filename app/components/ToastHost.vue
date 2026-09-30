@@ -22,18 +22,18 @@ const styles = {
       enter-active-class="transition duration-200"
       leave-active-class="transition duration-150"
     >
-      <button
+      <!-- Aviso, no botón: se va solo. Tocarlo lo cierra antes, como atajo. -->
+      <div
         v-if="current"
         :key="current.id"
-        type="button"
         :role="current.kind === 'error' ? 'alert' : 'status'"
-        class="pointer-events-auto flex w-full max-w-md items-center gap-3 rounded-xl px-4 py-3 text-left text-sm font-semibold shadow-lg"
+        class="pointer-events-auto flex w-full max-w-md items-center gap-3 rounded-xl px-4 py-3 text-sm font-semibold shadow-lg"
         :class="styles[current.kind]"
         @click="dismiss"
       >
         <AppIcon :name="current.kind === 'error' ? 'alert' : 'check'" :size="20" />
         <span class="flex-1">{{ current.message }}</span>
-      </button>
+      </div>
     </Transition>
   </div>
 </template>

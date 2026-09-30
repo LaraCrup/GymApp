@@ -35,6 +35,7 @@ async function create(name: string) {
 
 <template>
   <AppHeader title="Mis rutinas" />
+  <InstallBanner />
 
   <AppLoading v-if="status === 'pending' && !list" />
   <div v-else-if="error" class="flex flex-col gap-3 p-4">

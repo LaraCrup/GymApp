@@ -39,6 +39,11 @@ async function logout() {
       </p>
     </section>
 
+    <section id="instalar" class="flex flex-col gap-3 rounded-2xl bg-white p-5">
+      <h2 class="text-base font-bold">Tener la app en el celular</h2>
+      <InstallInstructions />
+    </section>
+
     <div class="flex flex-col gap-3">
       <AppButton variant="secondary" block to="/clave">Cambiar mi contraseña</AppButton>
       <AppButton variant="danger" block :loading="loading" @click="logout">Salir de la app</AppButton>
