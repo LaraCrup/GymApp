@@ -93,7 +93,7 @@ SUPABASE_SMTP_USER='cuenta@gmail.com' SUPABASE_SMTP_PASS='xxxx xxxx xxxx xxxx' s
 
 - Funciones: `search_exercises`, `similar_exercises`, `reorder_routine_exercises`, `previous_weights`, `is_admin`.
 - No se puede borrar del catálogo un ejercicio que alguien usa en una rutina o tiene en su historial.
-- `supabase db reset` recrea la base local (migraciones + catálogo inicial de 67 ejercicios, sin videos).
+- `supabase db reset` recrea la base local (migraciones + catálogo inicial de 67 ejercicios con video de YouTube verificado).
 - `npm run db:types` regenera `app/types/database.types.ts`.
 
 ## Tests

@@ -13,7 +13,7 @@ select is(
   (select count(*)::int from public.muscle_groups g where not exists (select 1 from public.exercises e where e.muscle_group_id = g.id)),
   0, 'todos los grupos musculares tienen ejercicios'
 );
-select is((select count(*)::int from public.exercises where youtube_id is not null), 0, 'el seed no trae videos inventados');
+select is((select count(*)::int from public.exercises where created_by is null and youtube_id is null), 0, 'todo el catálogo inicial tiene video');
 
 -- ── Como persona común ───────────────────────────────────────────────────────
 set local role authenticated;
