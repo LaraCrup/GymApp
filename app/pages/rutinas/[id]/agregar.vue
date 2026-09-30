@@ -91,7 +91,6 @@ const count = computed(() => addedIds.value.length)
     </p>
     <ExerciseSearch
       state-key="agregar"
-      :added-ids="addedIds"
       :create-to="q => ({ path: '/ejercicios/nuevo', query: { ...(q ? { nombre: q } : {}), rutina: routineId } })"
       @select="pick"
     />
@@ -100,8 +99,8 @@ const count = computed(() => addedIds.value.length)
   <!-- Después de agregar: confirmación y salida a mano, justo arriba de la barra inferior. -->
   <div
     v-if="lastAdded"
-    class="fixed inset-x-0 z-10 mx-auto max-w-xl border-t border-line bg-white px-4 py-3 shadow-[0_-4px_12px_rgb(15_23_42/0.08)]"
-    style="bottom: calc(3.5rem + 1px + env(safe-area-inset-bottom))"
+    class="fixed inset-x-0 z-10 mx-auto max-w-xl border-t border-line bg-elevated/90 px-4 py-3 shadow-[0_-8px_24px_rgb(0_0_0/0.4)] backdrop-blur-xl"
+    style="bottom: calc(4rem + 1px + env(safe-area-inset-bottom))"
   >
     <div class="flex items-center gap-3">
       <p role="status" class="min-w-0 flex-1 text-sm">

@@ -81,7 +81,7 @@ async function save(input: ExerciseInput) {
       <template #after-name>
         <section
           v-if="similar.length"
-          class="flex flex-col gap-2 rounded-xl border-2 border-primary bg-primary-soft p-3"
+          class="flex flex-col gap-2 rounded-2xl border border-primary/30 bg-brand-soft p-3"
           aria-live="polite"
         >
           <h2 class="text-sm font-semibold text-primary-strong">¿Es alguno de estos? Ya están en el catálogo:</h2>

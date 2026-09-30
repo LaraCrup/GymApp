@@ -34,8 +34,11 @@ async function create(name: string) {
 </script>
 
 <template>
-  <AppHeader title="Mis rutinas" />
-  <InstallBanner />
+  <AppHeader title="Mis rutinas">
+    <template #action>
+      <DownloadAppLink />
+    </template>
+  </AppHeader>
 
   <AppLoading v-if="status === 'pending' && !list" />
   <div v-else-if="error" class="flex flex-col gap-3 p-4">
@@ -56,8 +59,14 @@ async function create(name: string) {
 
   <div v-else class="flex flex-col gap-3 p-4">
     <ul class="flex flex-col gap-2">
-      <li v-for="r in list" :key="r.id">
-        <NuxtLink :to="`/rutinas/${r.id}`" class="flex min-h-16 items-center gap-3 rounded-2xl bg-white p-4 active:bg-primary-soft">
+      <li v-for="(r, i) in list" :key="r.id">
+        <NuxtLink :to="`/rutinas/${r.id}`" class="card flex min-h-16 items-center gap-3 rounded-2xl p-3 pr-4 transition active:scale-[0.99] active:bg-primary-soft">
+          <span
+            class="glow flex size-12 shrink-0 items-center justify-center rounded-xl bg-brand text-base font-extrabold"
+            aria-hidden="true"
+          >
+            {{ String(i + 1).padStart(2, '0') }}
+          </span>
           <span class="min-w-0 flex-1">
             <span class="block font-semibold">{{ r.name }}</span>
             <span class="block text-sm text-muted">

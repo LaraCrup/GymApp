@@ -3,6 +3,7 @@
 const props = defineProps<{ exerciseId: string }>()
 
 const history = useWeightHistory()
+// La clave la usa también la ficha del ejercicio para actualizar el gráfico al cambiar el peso.
 const { data: points, status, error, refresh } = useLazyAsyncData(`history-${props.exerciseId}`, () => history.forExercise(props.exerciseId))
 
 const first = computed(() => points.value?.[0])
@@ -19,7 +20,7 @@ const signed = (n: number) => `${n > 0 ? '+' : '−'}${formatKg(Math.abs(n))}`
 </script>
 
 <template>
-  <section class="flex flex-col gap-3 rounded-2xl bg-white p-4">
+  <section class="card flex flex-col gap-3 rounded-2xl p-4">
     <h3 class="text-base font-bold">Mi progreso</h3>
 
     <AppLoading v-if="status === 'pending' && !points" />

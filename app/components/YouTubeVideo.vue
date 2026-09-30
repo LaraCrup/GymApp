@@ -8,7 +8,7 @@ watch(() => props.youtubeId, () => (playing.value = false))
 </script>
 
 <template>
-  <div class="relative aspect-video w-full overflow-hidden rounded-2xl bg-ink">
+  <div class="relative aspect-video w-full overflow-hidden rounded-2xl bg-black ring-1 ring-line">
     <template v-if="youtubeId">
       <iframe
         v-if="playing"
@@ -26,13 +26,13 @@ watch(() => props.youtubeId, () => (playing.value = false))
         @click="playing = true"
       >
         <img :src="youtubeThumbnail(youtubeId)" alt="" loading="lazy" decoding="async" class="absolute inset-0 size-full object-cover">
-        <span class="relative flex items-center gap-2 rounded-full bg-black/70 px-5 py-3 text-sm font-semibold text-white">
+        <span class="relative flex items-center gap-2 glow rounded-full bg-brand px-5 py-3 text-sm font-semibold transition group-active:scale-95">
           <AppIcon name="play" :size="20" />
           Ver video
         </span>
       </button>
     </template>
-    <div v-else class="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-primary-soft text-primary">
+    <div v-else class="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-brand-soft text-primary">
       <AppIcon name="dumbbell" :size="32" />
       <span class="text-sm font-semibold">Todavía no tiene video</span>
     </div>

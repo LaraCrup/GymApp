@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import type { RoutineItem } from '~/composables/useRoutines'
-import type { WeightPoint } from '~/composables/useWeightHistory'
 
 const route = useRoute()
 const id = route.params.id as string
@@ -20,62 +19,7 @@ useHead(() => ({ title: routine.value?.name ?? 'Rutina' }))
 
 const items = computed(() => routine.value?.items ?? [])
 
-// "La vez anterior": ayuda, no es crítico; si falla, la rutina se usa igual.
-const history = useWeightHistory()
-const previous = ref(new Map<string, WeightPoint>())
-watch(
-  () => items.value.map(i => i.exercise_id).join(),
-  async () => {
-    try {
-      previous.value = await history.previous(items.value.map(i => i.exercise_id))
-    }
-    catch {
-      previous.value = new Map()
-    }
-  },
-  { immediate: true },
-)
 const editing = ref(false)
-const grouped = useLocalPref('agrupar-por-musculo', false)
-
-// Agrupado: por grupo muscular (en el orden fijo de los grupos) y, dentro, en el orden de la rutina.
-const sections = computed(() => {
-  if (!grouped.value || editing.value) return [{ key: 'todos', title: '', items: items.value }]
-  return muscleGroups.groups.value
-    .map(g => ({ key: g.id, title: g.name, items: items.value.filter(i => i.exercise.muscle_group_id === g.id) }))
-    .filter(s => s.items.length)
-})
-
-// ── Series y reps (el peso tiene sus propios botones en la tarjeta) ──
-const settingsItem = ref<RoutineItem | null>(null)
-const settingsOpen = ref(false)
-const settingsDraft = ref({ sets: 3, reps: 10, weight_kg: 0 })
-const savingSettings = ref(false)
-
-function openSettings(item: RoutineItem) {
-  settingsItem.value = item
-  settingsDraft.value = { sets: item.sets, reps: item.reps, weight_kg: item.weight_kg }
-  settingsOpen.value = true
-}
-
-async function saveSettings() {
-  const item = settingsItem.value
-  if (!item) return
-  savingSettings.value = true
-  try {
-    const { sets, reps } = settingsDraft.value
-    await routines.updateItem(item.id, { sets, reps })
-    Object.assign(item, { sets, reps })
-    settingsOpen.value = false
-    toast.ok('Guardado')
-  }
-  catch (e) {
-    toast.error(friendlyError(e))
-  }
-  finally {
-    savingSettings.value = false
-  }
-}
 
 // ── Orden ──
 async function move(index: number, delta: -1 | 1) {
@@ -167,8 +111,18 @@ async function removeRoutine() {
 
 <template>
   <AppHeader :title="routine?.name ?? 'Rutina'" back="/">
+    <template v-if="routine && !editing" #action>
+      <button
+        type="button"
+        class="mr-1 flex size-11 shrink-0 items-center justify-center rounded-full border border-primary/40 bg-primary-soft text-primary active:bg-primary/25"
+        aria-label="Editar rutina"
+        @click="editing = true"
+      >
+        <AppIcon name="edit" :size="22" />
+      </button>
+    </template>
     <!-- Arriba también: con una lista larga no hace falta bajar hasta el final para salir. -->
-    <template v-if="editing" #action>
+    <template v-else-if="editing" #action>
       <button
         type="button"
         class="flex min-h-12 shrink-0 items-center gap-1 rounded-xl px-3 font-semibold text-primary active:bg-primary-soft"
@@ -202,76 +156,52 @@ async function removeRoutine() {
     </EmptyState>
 
     <template v-else>
-      <p v-if="editing" class="rounded-xl bg-primary-soft p-3 text-sm text-primary-strong">
-        Usá las flechas para cambiar el orden. Cuando termines, tocá <strong>Listo</strong>.
-      </p>
-      <label v-else class="flex min-h-12 cursor-pointer items-center justify-between gap-3 rounded-xl bg-white px-4">
-        <span class="text-sm font-semibold">Agrupar por músculo</span>
-        <input v-model="grouped" type="checkbox" role="switch" class="peer sr-only">
-        <span
-          class="relative h-7 w-12 shrink-0 rounded-full bg-line transition-colors peer-checked:bg-primary peer-focus-visible:outline-3 peer-focus-visible:outline-primary after:absolute after:top-0.5 after:left-0.5 after:size-6 after:rounded-full after:bg-white after:shadow after:transition-transform peer-checked:after:translate-x-5"
-          aria-hidden="true"
-        />
-      </label>
-
-      <section v-for="section in sections" :key="section.key" class="flex flex-col gap-2">
-        <h2 v-if="section.title" class="mt-2 text-sm font-bold tracking-wide text-muted uppercase">{{ section.title }}</h2>
+      <!-- Modo edición: el nombre arriba, con el lápiz para cambiarlo. -->
+      <div v-if="editing" class="flex items-center gap-3">
+        <div class="min-w-0 flex-1">
+          <p class="text-xs text-muted">Nombre de la rutina</p>
+          <p class="truncate font-semibold">{{ routine.name }}</p>
+        </div>
+        <button
+          type="button"
+          class="flex size-11 shrink-0 items-center justify-center rounded-full border border-primary/40 bg-primary-soft text-primary active:bg-primary/25"
+          aria-label="Cambiar el nombre"
+          @click="renameError = ''; renaming = true"
+        >
+          <AppIcon name="edit" :size="20" />
+        </button>
+      </div>
+      <div class="flex flex-col gap-2">
         <RoutineExerciseCard
-          v-for="item in section.items"
+          v-for="(item, index) in items"
           :key="item.id"
           :item="item"
+          :number="index + 1"
           :editing="editing"
-          :first="items.indexOf(item) === 0"
-          :last="items.indexOf(item) === items.length - 1"
-          :previous="previous.get(item.exercise_id)"
-          @settings="openSettings(item)"
-          @up="move(items.indexOf(item), -1)"
-          @down="move(items.indexOf(item), 1)"
+          :first="index === 0"
+          :last="index === items.length - 1"
+          @up="move(index, -1)"
+          @down="move(index, 1)"
           @remove="removeItem(item)"
         />
-      </section>
+      </div>
 
       <div v-if="editing" class="flex flex-col gap-3 border-t border-line pt-4">
-        <AppButton variant="secondary" block @click="renameError = ''; renaming = true">
-          <AppIcon name="edit" :size="20" />
-          Cambiar el nombre
+        <AppButton size="lg" block @click="editing = false">
+          <AppIcon name="check" :size="20" />
+          Listo
         </AppButton>
         <AppButton variant="danger" block :loading="deleting" @click="removeRoutine">
           <AppIcon name="trash" :size="20" />
           Borrar rutina
         </AppButton>
-        <AppButton size="lg" block @click="editing = false">
-          <AppIcon name="check" :size="20" />
-          Listo
-        </AppButton>
       </div>
-      <div v-else class="flex flex-col gap-3">
-        <AppButton size="lg" block :to="`/rutinas/${id}/agregar`">
-          <AppIcon name="plus" :size="20" />
-          Agregar ejercicio
-        </AppButton>
-        <AppButton variant="secondary" block @click="editing = true">
-          <AppIcon name="edit" :size="20" />
-          Editar rutina
-        </AppButton>
-      </div>
-    </template>
-
-    <!-- Rutina vacía: igual se puede renombrar o borrar -->
-    <div v-if="!items.length && !editing" class="flex flex-col gap-3">
-      <AppButton variant="secondary" block @click="editing = true">
-        <AppIcon name="edit" :size="20" />
-        Editar rutina
+      <AppButton v-else size="lg" block :to="`/rutinas/${id}/agregar`">
+        <AppIcon name="plus" :size="20" />
+        Agregar ejercicio
       </AppButton>
-    </div>
+    </template>
   </div>
-
-  <AppSheet v-model:open="settingsOpen" :title="settingsItem?.exercise.name ?? ''">
-    <form class="flex flex-col gap-4" novalidate @submit.prevent="saveSettings">
-      <ItemSettingsFields v-model="settingsDraft" :with-weight="false" />
-      <AppButton type="submit" size="lg" block :loading="savingSettings">Guardar</AppButton>
-    </form>
-  </AppSheet>
 
   <RoutineNameSheet
     v-model:open="renaming"

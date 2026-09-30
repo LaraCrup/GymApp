@@ -4,6 +4,7 @@ import type { WeightPoint } from '~/composables/useWeightHistory'
 // Cambiar el peso en el gimnasio: botones grandes, sin confirmar, se guarda solo.
 const weight = defineModel<number>({ required: true })
 const props = defineProps<{ itemId: string; exerciseName: string; previous?: WeightPoint }>()
+const emit = defineEmits<{ saved: [] }>()
 
 const MAX = 999
 const STEPS = [-2.5, -1, 1, 2.5]
@@ -46,10 +47,16 @@ let savedTimer: ReturnType<typeof setTimeout> | undefined
 watch(status, s => {
   clearTimeout(savedTimer)
   savedVisible.value = s === 'saved'
-  if (s === 'saved') savedTimer = setTimeout(() => (savedVisible.value = false), 3000)
+  if (s === 'saved') {
+    savedTimer = setTimeout(() => (savedVisible.value = false), 3000)
+    emit('saved')
+  }
   if (s === 'error') toast.error(`No se guardó el peso de ${props.exerciseName}. Revisá la conexión y tocá «Reintentar».`)
 })
 onBeforeUnmount(() => clearTimeout(savedTimer))
+
+// La ficha lo usa antes de pasar a peso corporal: que un guardado pendiente no pise el cambio.
+defineExpose({ flush: save })
 
 const id = useId()
 const stepLabel = (s: number) => `${s > 0 ? '+' : '−'}${formatNumber(Math.abs(s))}`
@@ -67,7 +74,7 @@ const stepLabel = (s: number) => `${s > 0 ? '+' : '−'}${formatNumber(Math.abs(
             type="text"
             inputmode="decimal"
             autocomplete="off"
-            class="min-h-14 w-full rounded-xl border-2 border-line bg-white pr-7 pl-2 text-center text-lg font-bold outline-none focus:border-primary"
+            class="min-h-14 w-full rounded-xl border border-primary/40 bg-brand-soft pr-7 pl-2 text-center text-lg font-bold transition outline-none focus:border-primary focus:ring-4 focus:ring-primary/20"
             enterkeyhint="done"
             @focus="($event.target as HTMLInputElement).select()"
             @blur="commit"
@@ -77,7 +84,7 @@ const stepLabel = (s: number) => `${s > 0 ? '+' : '−'}${formatNumber(Math.abs(
         </div>
         <button
           type="button"
-          class="min-h-14 flex-1 rounded-xl bg-primary-soft text-base font-bold text-primary-strong active:bg-primary active:text-white disabled:opacity-40"
+          class="min-h-14 flex-1 rounded-xl border border-line bg-field text-base font-bold text-primary-strong transition active:scale-95 active:bg-primary-soft disabled:opacity-40"
           :aria-label="`${s > 0 ? 'Sumar' : 'Restar'} ${formatNumber(Math.abs(s))} kg a ${exerciseName}`"
           :disabled="(s < 0 && weight <= 0) || (s > 0 && weight >= MAX)"
           @click="change(weight + s)"

@@ -15,7 +15,7 @@ watch(pending, value => {
   <dialog
     ref="dialog"
     aria-labelledby="confirm-title"
-    class="m-auto w-[calc(100%-2rem)] max-w-md rounded-2xl bg-white p-5 text-ink shadow-xl"
+    class="m-auto w-[calc(100%-2rem)] max-w-md rounded-3xl border border-line bg-elevated p-5 text-ink shadow-[0_24px_64px_rgb(124_58_237/0.3)]"
     @cancel.prevent="answer(false)"
   >
     <template v-if="pending">

@@ -6,7 +6,7 @@ defineProps<{ message?: string }>()
   <p
     v-if="message"
     role="alert"
-    class="flex items-start gap-2 rounded-xl border-2 border-danger bg-danger-soft p-3 text-sm font-semibold text-danger"
+    class="flex items-start gap-2 rounded-xl border border-danger/40 bg-danger-soft p-3 text-sm font-semibold text-danger"
   >
     <AppIcon name="alert" :size="20" />
     <span>{{ message }}</span>

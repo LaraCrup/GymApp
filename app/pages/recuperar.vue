@@ -53,13 +53,22 @@ function editEmail() {
 </script>
 
 <template>
+  <!-- Arriba a la izquierda, como en el resto de la app: salir sin bajar hasta el final. -->
+  <NuxtLink
+    to="/entrar"
+    class="absolute top-[calc(env(safe-area-inset-top)+0.5rem)] left-2 flex min-h-12 items-center gap-1 rounded-xl pr-3 pl-1 text-base font-semibold text-primary active:bg-primary-soft"
+  >
+    <AppIcon name="back" :size="22" />
+    Volver
+  </NuxtLink>
+
   <template v-if="sentTo">
     <EmptyState icon="check" title="Revisá tu mail">
       <div class="flex flex-col gap-4 text-left text-sm">
         <p class="text-center text-muted">
           Si hay una cuenta con este email, te llega un mail con un botón para elegir una contraseña nueva:
         </p>
-        <p class="rounded-xl bg-white p-3 text-center text-base font-semibold break-all">{{ sentTo }}</p>
+        <p class="card rounded-xl p-3 text-center text-base font-semibold break-all">{{ sentTo }}</p>
         <ul class="flex list-disc flex-col gap-1 pl-5 text-muted">
           <li>Puede tardar unos minutos.</li>
           <li>Buscalo también en «Correo no deseado», «Spam» o «Promociones».</li>
@@ -67,11 +76,10 @@ function editEmail() {
         </ul>
         <ErrorBox :message="error" />
         <div class="flex flex-col gap-3">
-          <AppButton variant="secondary" block :loading="loading" :disabled="secondsLeft > 0" @click="send">
+          <AppButton :variant="secondsLeft > 0 ? 'secondary' : 'primary'" block :loading="loading" :disabled="secondsLeft > 0" @click="send">
             {{ secondsLeft > 0 ? `Mandar de nuevo (en ${secondsLeft} s)` : 'Mandar de nuevo' }}
           </AppButton>
           <AppButton variant="ghost" block @click="editEmail">Corregir el email</AppButton>
-          <AppButton variant="ghost" block to="/entrar">Volver a entrar</AppButton>
         </div>
       </div>
     </EmptyState>
@@ -79,13 +87,12 @@ function editEmail() {
 
   <template v-else>
     <h1 class="text-xl font-bold">¿Te olvidaste la contraseña?</h1>
-    <p class="mt-1 mb-6 text-sm text-muted">Te mandamos un mail para que elijas una nueva.</p>
+    <p class="mt-1 mb-6 text-sm text-muted">Te mandamos un mail para que puedas resetearla.</p>
 
     <form class="flex flex-col gap-5" novalidate @submit.prevent="send">
       <AppInput v-model="email" label="Tu email" type="email" autocomplete="email" inputmode="email" enterkeyhint="send" />
       <ErrorBox :message="error" />
       <AppButton type="submit" size="lg" block :loading="loading">Mandarme el mail</AppButton>
-      <AppButton variant="ghost" block to="/entrar">Volver</AppButton>
     </form>
   </template>
 </template>

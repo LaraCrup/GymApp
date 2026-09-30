@@ -21,14 +21,15 @@ const visible = ref(false)
     :hint="hint"
     :error="error"
   >
-    <template #after>
+    <template #inside>
       <button
         type="button"
-        class="min-h-12 shrink-0 rounded-xl border-2 border-line bg-white px-3 text-sm font-semibold text-primary active:bg-primary-soft"
+        class="absolute inset-y-0 right-0 flex w-12 items-center justify-center rounded-r-xl text-muted transition-colors active:text-primary"
+        :aria-label="visible ? 'Ocultar contraseña' : 'Mostrar contraseña'"
         :aria-pressed="visible"
         @click="visible = !visible"
       >
-        {{ visible ? 'Ocultar' : 'Mostrar' }}
+        <AppIcon :name="visible ? 'eye-off' : 'eye'" :size="22" />
       </button>
     </template>
   </AppInput>

@@ -22,12 +22,12 @@ export default defineNuxtConfig({
       title: 'Mis Rutinas',
       meta: [
         { name: 'viewport', content: 'width=device-width, initial-scale=1, viewport-fit=cover' },
-        { name: 'theme-color', content: '#1d4ed8' },
+        { name: 'theme-color', content: '#09090f' },
         { name: 'description', content: 'Tus rutinas del gimnasio, tus pesos y tu progreso.' },
         // iPhone: abrir a pantalla completa cuando se agrega a la pantalla de inicio.
         { name: 'apple-mobile-web-app-capable', content: 'yes' },
         { name: 'apple-mobile-web-app-title', content: 'Mis Rutinas' },
-        { name: 'apple-mobile-web-app-status-bar-style', content: 'default' },
+        { name: 'apple-mobile-web-app-status-bar-style', content: 'black-translucent' },
       ],
       link: [
         { rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' },
@@ -52,8 +52,8 @@ export default defineNuxtConfig({
       start_url: '/',
       display: 'standalone',
       orientation: 'portrait',
-      background_color: '#f1f5f9',
-      theme_color: '#1d4ed8',
+      background_color: '#09090f',
+      theme_color: '#09090f',
       icons: [
         { src: '/pwa-192x192.png', sizes: '192x192', type: 'image/png' },
         { src: '/pwa-512x512.png', sizes: '512x512', type: 'image/png' },

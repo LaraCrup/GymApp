@@ -2,7 +2,8 @@
 // Número con botones grandes de − y +, y también editable a mano (acepta coma).
 const model = defineModel<number>({ required: true })
 const props = withDefaults(
-  defineProps<{ label: string; min?: number; max: number; step?: number; unit?: string }>(),
+  // hideLabel: la etiqueta queda solo para lectores de pantalla (cuando ya hay un título visible arriba).
+  defineProps<{ label: string; min?: number; max: number; step?: number; unit?: string; hideLabel?: boolean }>(),
   { min: 0, step: 1 },
 )
 
@@ -26,11 +27,11 @@ function commit() {
 
 <template>
   <div class="flex flex-col gap-1.5">
-    <label :for="id" class="text-sm font-semibold">{{ label }}</label>
+    <label :for="id" class="text-sm font-semibold" :class="{ 'sr-only': hideLabel }">{{ label }}</label>
     <div class="flex items-stretch gap-2">
       <button
         type="button"
-        class="flex min-h-12 w-14 shrink-0 items-center justify-center rounded-xl border-2 border-line bg-white text-primary active:bg-primary-soft disabled:opacity-40"
+        class="flex min-h-12 w-14 shrink-0 items-center justify-center rounded-xl border border-line bg-field text-primary transition active:bg-primary-soft disabled:opacity-40"
         :aria-label="`Restar ${formatNumber(step)}${unit ? ` ${unit}` : ''}`"
         :disabled="model <= min"
         @click="set(model - step)"
@@ -44,7 +45,7 @@ function commit() {
           type="text"
           inputmode="decimal"
           autocomplete="off"
-          class="min-h-12 w-full rounded-xl border-2 border-line bg-white px-3 text-center text-base font-semibold outline-none focus:border-primary"
+          class="min-h-12 w-full rounded-xl border border-line bg-field px-3 text-center text-base font-semibold transition outline-none focus:border-primary focus:ring-4 focus:ring-primary/15"
           :class="{ 'pr-10': unit }"
           enterkeyhint="done"
           @focus="($event.target as HTMLInputElement).select()"
@@ -55,7 +56,7 @@ function commit() {
       </div>
       <button
         type="button"
-        class="flex min-h-12 w-14 shrink-0 items-center justify-center rounded-xl border-2 border-line bg-white text-primary active:bg-primary-soft disabled:opacity-40"
+        class="flex min-h-12 w-14 shrink-0 items-center justify-center rounded-xl border border-line bg-field text-primary transition active:bg-primary-soft disabled:opacity-40"
         :aria-label="`Sumar ${formatNumber(step)}${unit ? ` ${unit}` : ''}`"
         :disabled="model >= max"
         @click="set(model + step)"

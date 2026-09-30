@@ -7,8 +7,6 @@ const props = defineProps<{
   stateKey: string
   /** A dónde lleva "Crear ejercicio nuevo"; recibe lo que se buscó. */
   createTo: (q: string) => RouteLocationRaw
-  /** Ejercicios que ya están en la rutina: se marcan en la lista. */
-  addedIds?: string[]
 }>()
 defineEmits<{ select: [exercise: Exercise] }>()
 
@@ -64,10 +62,10 @@ onBeforeUnmount(() => clearTimeout(timer))
       placeholder="Buscá por cualquier nombre…"
       enterkeyhint="search"
     >
-      <template v-if="q" #after>
+      <template v-if="q" #inside>
         <button
           type="button"
-          class="flex min-h-12 w-12 shrink-0 items-center justify-center rounded-xl border-2 border-line bg-white text-muted active:bg-surface"
+          class="absolute inset-y-0 right-0 flex w-12 items-center justify-center rounded-r-xl text-muted active:text-ink"
           aria-label="Borrar búsqueda"
           @click="q = ''"
         >
@@ -86,12 +84,12 @@ onBeforeUnmount(() => clearTimeout(timer))
       </p>
       <ul v-else class="flex flex-col gap-2 transition-opacity" :class="{ 'opacity-60': loading }" :aria-busy="loading">
         <li v-for="exercise in results" :key="exercise.id">
-          <ExerciseListItem :exercise="exercise" :added="addedIds?.includes(exercise.id)" @select="$emit('select', exercise)" />
+          <ExerciseListItem :exercise="exercise" @select="$emit('select', exercise)" />
         </li>
       </ul>
     </template>
 
-    <div class="mt-2 flex flex-col items-center gap-2 rounded-xl border-2 border-dashed border-line p-4 text-center">
+    <div class="mt-2 flex flex-col items-center gap-2 rounded-2xl border border-dashed border-primary/30 bg-brand-soft p-4 text-center">
       <p class="text-sm text-muted">¿No está el que buscás?</p>
       <AppButton variant="secondary" block :to="createTo(q)">
         <AppIcon name="plus" :size="20" />

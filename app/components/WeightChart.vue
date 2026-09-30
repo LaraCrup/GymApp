@@ -39,6 +39,9 @@ function y(kg: number) {
 }
 
 const path = computed(() => props.points.map((p, i) => `${i ? 'L' : 'M'}${x(i).toFixed(1)},${y(p.weight_kg).toFixed(1)}`).join(''))
+// Área rellena bajo la línea, hasta el piso del gráfico.
+const area = computed(() => `${path.value}L${x(lastIndex.value).toFixed(1)},${M.top + plotH}L${x(0).toFixed(1)},${M.top + plotH}Z`)
+const gid = useId()
 const lastIndex = computed(() => props.points.length - 1)
 
 // ── Interacción ──
@@ -94,6 +97,18 @@ const tooltip = computed(() => {
       @keydown="onKey"
       @blur="active = null"
     >
+      <defs>
+        <!-- En coordenadas del gráfico: con todos los pesos iguales la línea es plana y no tiene alto. -->
+        <linearGradient :id="`${gid}-line`" gradientUnits="userSpaceOnUse" :x1="M.left" :x2="W - M.right" y1="0" y2="0">
+          <stop offset="0%" stop-color="#8b5cf6" />
+          <stop offset="100%" stop-color="#38bdf8" />
+        </linearGradient>
+        <linearGradient :id="`${gid}-area`" x1="0" x2="0" y1="0" y2="1">
+          <stop offset="0%" stop-color="#6366f1" stop-opacity="0.35" />
+          <stop offset="100%" stop-color="#6366f1" stop-opacity="0" />
+        </linearGradient>
+      </defs>
+
       <!-- Grilla y eje Y (discretos) -->
       <g class="text-[11px]" fill="var(--color-muted)">
         <template v-for="t in yScale.ticks" :key="t">
@@ -112,13 +127,14 @@ const tooltip = computed(() => {
         stroke="var(--color-muted)" stroke-width="1" stroke-dasharray="3 3"
       />
 
-      <path :d="path" fill="none" stroke="var(--color-primary)" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" />
+      <path v-if="points.length > 1" :d="area" :fill="`url(#${gid}-area)`" />
+      <path :d="path" fill="none" :stroke="`url(#${gid}-line)`" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round" />
       <circle
         v-for="(p, i) in points"
         :key="p.logged_on"
         :cx="x(i)" :cy="y(p.weight_kg)"
         :r="active === i ? 6 : 4"
-        fill="var(--color-primary)" stroke="#fff" stroke-width="2"
+        :fill="i === lastIndex ? 'var(--color-accent)' : 'var(--color-primary)'" stroke="var(--color-elevated)" stroke-width="2"
       />
 
       <!-- Etiqueta directa solo en el último valor -->
@@ -131,7 +147,7 @@ const tooltip = computed(() => {
 
     <div
       v-if="tooltip"
-      class="pointer-events-none absolute top-0 -translate-x-1/2 rounded-lg bg-ink px-2.5 py-1.5 text-center text-xs text-white shadow"
+      class="pointer-events-none absolute top-0 -translate-x-1/2 rounded-lg border border-line bg-elevated px-2.5 py-1.5 text-center text-xs text-ink shadow-lg"
       :style="{ left: `${tooltip.left}%` }"
     >
       <span class="block font-bold">{{ formatKg(tooltip.p.weight_kg) }}</span>

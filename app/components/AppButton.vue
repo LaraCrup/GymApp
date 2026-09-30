@@ -17,16 +17,16 @@ const props = withDefaults(
 )
 
 const variants: Record<Variant, string> = {
-  primary: 'bg-primary text-white active:bg-primary-strong',
-  secondary: 'bg-white text-primary border-2 border-primary active:bg-primary-soft',
-  danger: 'bg-danger text-white active:bg-red-900',
+  primary: 'bg-brand glow active:brightness-90',
+  secondary: 'border border-primary/40 bg-primary-soft text-primary active:bg-primary/25',
+  danger: 'bg-danger-soft text-danger border border-danger/40 active:bg-danger/25',
   ghost: 'bg-transparent text-primary active:bg-primary-soft',
   'danger-ghost': 'bg-transparent text-danger active:bg-danger-soft',
 }
 
 const classes = computed(() => [
   'inline-flex items-center justify-center gap-2 rounded-xl font-semibold select-none',
-  'transition-colors disabled:opacity-50 disabled:pointer-events-none',
+  'transition active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none',
   props.size === 'lg' ? 'min-h-14 px-6 text-base' : 'min-h-12 px-4 text-base',
   props.block && 'w-full',
   variants[props.variant],

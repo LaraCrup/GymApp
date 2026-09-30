@@ -19,16 +19,17 @@ onMounted(() => {
   <dialog
     ref="dialog"
     :aria-label="title"
-    class="panel mx-auto mt-auto mb-0 max-h-[90dvh] w-full max-w-xl overflow-y-auto rounded-t-2xl bg-white p-0 text-ink shadow-xl"
+    class="panel mx-auto mt-auto mb-0 max-h-[90dvh] w-full max-w-xl overflow-y-auto rounded-t-3xl border-t border-line bg-elevated p-0 text-ink shadow-[0_-12px_48px_rgb(124_58_237/0.25)]"
     @close="open = false"
     @click.self="open = false"
   >
-    <div v-if="open" class="flex flex-col gap-4 p-4 pb-[calc(1rem+env(safe-area-inset-bottom))]">
+    <div v-if="open" class="flex flex-col gap-4 p-4 pt-2 pb-[calc(1rem+env(safe-area-inset-bottom))]">
+      <span class="mx-auto h-1.5 w-10 rounded-full bg-white/15" aria-hidden="true" />
       <header class="flex items-center justify-between gap-2">
         <h2 class="text-lg font-bold">{{ title }}</h2>
         <button
           type="button"
-          class="flex size-12 items-center justify-center rounded-full text-muted active:bg-surface"
+          class="flex size-12 items-center justify-center rounded-full text-muted active:bg-field"
           aria-label="Cerrar"
           @click="open = false"
         >

@@ -46,8 +46,8 @@ function submit() {
         <label
           v-for="g in groups"
           :key="g.id"
-          class="flex min-h-12 cursor-pointer items-center justify-center rounded-xl border-2 px-3 text-center text-sm font-semibold has-focus-visible:outline-3 has-focus-visible:outline-primary"
-          :class="draft.muscleGroupId === g.id ? 'border-primary bg-primary text-white' : 'border-line bg-white'"
+          class="flex min-h-12 cursor-pointer items-center justify-center rounded-xl border px-3 transition text-center text-sm font-semibold has-focus-visible:outline-3 has-focus-visible:outline-primary"
+          :class="draft.muscleGroupId === g.id ? 'glow border-transparent bg-brand' : 'border-line bg-field active:bg-primary-soft'"
         >
           <input v-model="draft.muscleGroupId" type="radio" name="muscle-group" :value="g.id" class="sr-only">
           {{ g.name }}

@@ -2,9 +2,9 @@
 const { current, dismiss } = useToast()
 
 const styles = {
-  ok: 'bg-ok text-white',
-  error: 'bg-danger text-white',
-  info: 'bg-ink text-white',
+  ok: 'border-ok/40 text-ok',
+  error: 'border-danger/50 text-danger',
+  info: 'border-line text-ink',
 } as const
 </script>
 
@@ -27,12 +27,12 @@ const styles = {
         v-if="current"
         :key="current.id"
         :role="current.kind === 'error' ? 'alert' : 'status'"
-        class="pointer-events-auto flex w-full max-w-md items-center gap-3 rounded-xl px-4 py-3 text-sm font-semibold shadow-lg"
+        class="pointer-events-auto flex w-full max-w-md items-center gap-3 rounded-2xl border bg-elevated/95 px-4 py-3 text-sm font-semibold shadow-[0_12px_32px_rgb(0_0_0/0.5)] backdrop-blur-xl"
         :class="styles[current.kind]"
         @click="dismiss"
       >
         <AppIcon :name="current.kind === 'error' ? 'alert' : 'check'" :size="20" />
-        <span class="flex-1">{{ current.message }}</span>
+        <span class="flex-1 text-ink">{{ current.message }}</span>
       </div>
     </Transition>
   </div>
