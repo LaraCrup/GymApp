@@ -13,5 +13,6 @@ useHead({ title: 'Mis rutinas' })
       <AppIcon name="plus" :size="20" />
       Crear mi primera rutina
     </AppButton>
+    <p class="mt-2 text-sm text-muted">Disponible muy pronto. Mientras tanto, mirá los ejercicios.</p>
   </EmptyState>
 </template>

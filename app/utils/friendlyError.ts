@@ -16,6 +16,13 @@ const byCode: Record<string, string> = {
   over_request_rate_limit: 'Hubo muchos intentos seguidos. Esperá unos minutos y probá de nuevo.',
   over_email_send_rate_limit: 'Ya te mandamos un mail hace poco. Esperá unos minutos antes de pedir otro.',
   signup_disabled: 'No se pueden crear cuentas desde la app. Pedí que te inviten.',
+
+  // Base de datos (Postgres / PostgREST)
+  '23505': 'Ya existe uno con ese nombre. Buscalo en la lista.',
+  '23503': 'No se puede borrar porque se está usando en alguna rutina.',
+  '23514': 'Algún dato no es válido. Revisalo y probá de nuevo.',
+  '42501': 'No tenés permiso para hacer esto.',
+  PGRST116: 'No lo encontramos. Puede que lo hayan borrado.',
 }
 
 export const NETWORK_ERROR = 'No hay conexión a internet. Revisá el wifi o los datos y probá de nuevo.'

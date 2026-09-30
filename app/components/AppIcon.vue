@@ -11,6 +11,10 @@ const paths = {
   close: 'M18 6 6 18M6 6l12 12',
   back: 'M15 18l-6-6 6-6',
   dumbbell: 'M6.5 6.5v11M17.5 6.5v11M3 9.5v5M21 9.5v5M6.5 12h11',
+  play: 'M7 4.5v15l12-7.5-12-7.5Z',
+  edit: 'M4 20h4L19 9l-4-4L4 16v4ZM13.5 6.5l4 4',
+  trash: 'M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13',
+  chevron: 'M9 6l6 6-6 6',
 } as const
 
 export type IconName = keyof typeof paths

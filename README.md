@@ -52,6 +52,14 @@ set raw_app_meta_data = raw_app_meta_data || '{"is_admin": true}'
 where email = 'tu-email@ejemplo.com';
 ```
 
+## Catálogo de ejercicios
+
+- Compartido entre todas las personas. Cualquiera puede **crear** ejercicios; solo el admin puede **editarlos y borrarlos** (RLS en la base).
+- Carga inicial: 67 ejercicios con alias y grupo muscular (`supabase/migrations/*_catalog_seed.sql`), **sin videos**.
+- **Agregar un video:** entrar como admin → Ejercicios → tocar el ejercicio → *Editar* → pegar el link de YouTube (sirven los de *Compartir*, `watch?v=`, `youtu.be` y `shorts`). Se guarda solo el ID del video y se muestra con `youtube-nocookie.com`, recién cuando se toca *Ver video*.
+- Búsqueda (`search_exercises`): por nombre o alias, sin importar tildes ni mayúsculas, tolera errores de tipeo.
+- Antes de crear uno nuevo se muestran los parecidos (`similar_exercises`) para no duplicar.
+
 ## Base de datos
 
 - Todo cambio va como migración en `supabase/migrations/` (`supabase migration new <nombre>`), nunca a mano en el dashboard.
@@ -62,6 +70,6 @@ where email = 'tu-email@ejemplo.com';
 
 ```bash
 npm test            # unitarios (Vitest) de app/utils
-npm run db:test     # tests de la base (pgTAP): permisos, funciones, RLS
+npm run db:test     # tests de la base (pgTAP): permisos, funciones, RLS — correr después de `supabase db reset`
 npm run typecheck
 ```

@@ -4,6 +4,11 @@ useHead({ title: 'Ejercicios' })
 
 <template>
   <AppHeader title="Ejercicios" />
-  <!-- Etapa 2: buscador del catálogo. -->
-  <EmptyState icon="search" title="Catálogo de ejercicios" text="Acá vas a poder buscar ejercicios por cualquiera de sus nombres." />
+  <div class="p-4">
+    <ExerciseSearch
+      state-key="catalogo"
+      :create-to="q => ({ path: '/ejercicios/nuevo', query: q ? { nombre: q } : {} })"
+      @select="e => navigateTo(`/ejercicios/${e.id}`)"
+    />
+  </div>
 </template>

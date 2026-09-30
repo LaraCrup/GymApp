@@ -23,7 +23,39 @@ export type Database = {
           }
         },"public": {
           Tables: {
-            [_ in never]: never
+            "exercises": {
+                  Row: {
+                    "aliases": (string)[],"created_at": string,"created_by": string | null,"id": string,"muscle_group_id": string,"name": string,"search_text": string,"updated_at": string,"youtube_id": string | null
+                  }
+                  Insert: {
+                    "aliases"?: (string)[],"created_at"?: string,"created_by"?: string | null,"id"?: string,"muscle_group_id": string,"name": string,"search_text"?: string,"updated_at"?: string,"youtube_id"?: string | null
+                  }
+                  Update: {
+                    "aliases"?: (string)[],"created_at"?: string,"created_by"?: string | null,"id"?: string,"muscle_group_id"?: string,"name"?: string,"search_text"?: string,"updated_at"?: string,"youtube_id"?: string | null
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "exercises_muscle_group_id_fkey"
+      columns: ["muscle_group_id"]
+isOneToOne: false
+      referencedRelation: "muscle_groups"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"muscle_groups": {
+                  Row: {
+                    "id": string,"name": string,"sort_order": number
+                  }
+                  Insert: {
+                    "id": string,"name": string,"sort_order": number
+                  }
+                  Update: {
+                    "id"?: string,"name"?: string,"sort_order"?: number
+                  }
+                  Relationships: [
+                    
+                  ]
+                }
           }
           Views: {
             [_ in never]: never
@@ -31,6 +63,32 @@ export type Database = {
           Functions: {
             "is_admin":
 { Args: Record<PropertyKey, never>; Returns: boolean
+                           },
+"normalize_text":
+{ Args: { "t": string }; Returns: string
+                           },
+"search_exercises":
+{ Args: { "group_id"?: string,"max_results"?: number,"q"?: string }; Returns: {
+              "aliases": (string)[],
+"created_at": string,
+"created_by": string | null,
+"id": string,
+"muscle_group_id": string,
+"name": string,
+"search_text": string,
+"updated_at": string,
+"youtube_id": string | null
+            }[]
+                          SetofOptions: {
+        from: "*"
+        to: "exercises"
+        isOneToOne: false
+        isSetofReturn: true
+      } },
+"similar_exercises":
+{ Args: { "aliases"?: (string)[],"name": string }; Returns: {
+              "aliases": (string)[],"id": string,"muscle_group_id": string,"name": string,"score": number,"youtube_id": string
+            }[]
                            }
           }
           Enums: {

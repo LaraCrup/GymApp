@@ -13,6 +13,16 @@ describe('friendlyError', () => {
     expect(friendlyError(new TypeError('NetworkError when attempting to fetch resource.'))).toBe(NETWORK_ERROR)
   })
 
+  it('traduce errores de la base', () => {
+    expect(friendlyError({ code: '23505', message: 'duplicate key value violates unique constraint' })).toMatch(/Ya existe/)
+    expect(friendlyError({ code: '42501', message: 'new row violates row-level security policy' })).toMatch(/permiso/)
+    expect(friendlyError({ code: '23503' })).toMatch(/rutina/)
+  })
+
+  it('detecta errores de red que devuelve supabase-js en consultas', () => {
+    expect(friendlyError({ code: '', message: 'TypeError: Failed to fetch' })).toBe(NETWORK_ERROR)
+  })
+
   it('usa un mensaje genérico para lo desconocido', () => {
     expect(friendlyError({ code: 'algo_raro' })).toBe(GENERIC_ERROR)
     expect(friendlyError(null)).toBe(GENERIC_ERROR)

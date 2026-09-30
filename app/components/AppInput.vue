@@ -8,8 +8,11 @@ defineProps<{
   type?: InputTypeHTMLAttribute
   autocomplete?: string
   inputmode?: HTMLAttributes['inputmode']
+  placeholder?: string
   hint?: string
   error?: string
+  /** Oculta la etiqueta visualmente (sigue disponible para lectores de pantalla). */
+  hideLabel?: boolean
 }>()
 
 const id = useId()
@@ -17,7 +20,7 @@ const id = useId()
 
 <template>
   <div class="flex flex-col gap-1.5">
-    <label :for="id" class="text-sm font-semibold">{{ label }}</label>
+    <label :for="id" class="text-sm font-semibold" :class="{ 'sr-only': hideLabel }">{{ label }}</label>
     <p v-if="hint" :id="`${id}-hint`" class="text-sm text-muted">{{ hint }}</p>
     <div class="flex items-stretch gap-2">
       <!-- text-base (16px) es el mínimo para que iPhone no haga zoom al tocar el campo. -->
@@ -27,6 +30,7 @@ const id = useId()
         :type="type ?? 'text'"
         :autocomplete="autocomplete"
         :inputmode="inputmode"
+        :placeholder="placeholder"
         :aria-invalid="error ? true : undefined"
         :aria-describedby="[hint && `${id}-hint`, error && `${id}-error`].filter(Boolean).join(' ') || undefined"
         class="min-h-12 w-full min-w-0 rounded-xl border-2 bg-white px-4 text-base outline-none focus:border-primary"
