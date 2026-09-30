@@ -428,3 +428,20 @@ project_id = "lgbohqnlqytszrrwpocz"
 [remotes.production.auth]
 site_url = "https://progreso-gimnasio.vercel.app"
 additional_redirect_urls = ["https://progreso-gimnasio.vercel.app"]
+
+[remotes.production.auth.rate_limit]
+# Mails por hora (invitaciones + recuperar contraseña). El 2 de local es muy poco para producción.
+email_sent = 30
+
+# Gmail con "contraseña de aplicación". Sin SMTP propio, Supabase solo manda mails a los
+# miembros del proyecto y no deja usar las plantillas en español.
+# Los datos van por variables de entorno para no dejarlos en el repo:
+#   SUPABASE_SMTP_USER=cuenta@gmail.com SUPABASE_SMTP_PASS='xxxx xxxx xxxx xxxx' supabase config push
+[remotes.production.auth.email.smtp]
+enabled = true
+host = "smtp.gmail.com"
+port = 465
+user = "env(SUPABASE_SMTP_USER)"
+pass = "env(SUPABASE_SMTP_PASS)"
+admin_email = "env(SUPABASE_SMTP_USER)"
+sender_name = "Mis Rutinas"
