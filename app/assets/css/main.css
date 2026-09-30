@@ -1,0 +1,49 @@
+@import "tailwindcss";
+
+/* Colores con contraste AA o mejor sobre blanco. */
+@theme {
+  --font-sans: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+
+  --color-primary: #1d4ed8;
+  --color-primary-strong: #1e3a8a;
+  --color-primary-soft: #dbeafe;
+  --color-danger: #b91c1c;
+  --color-danger-soft: #fee2e2;
+  --color-ok: #15803d;
+  --color-ok-soft: #dcfce7;
+  --color-ink: #0f172a;
+  --color-muted: #475569;
+  --color-line: #cbd5e1;
+  --color-surface: #f1f5f9;
+}
+
+@layer base {
+  /* 112.5% = 18px de base: todo lo que usa rem (textos, espacios, alturas) escala junto. */
+  html {
+    font-size: 112.5%;
+    -webkit-text-size-adjust: 100%;
+    color-scheme: light;
+  }
+
+  body {
+    min-height: 100dvh;
+    background: var(--color-surface);
+    color: var(--color-ink);
+    -webkit-font-smoothing: antialiased;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* Sin zoom por doble toque: tocar "+1" rápido dos veces no tiene que agrandar la pantalla. */
+  a, button, input, select, textarea, label {
+    touch-action: manipulation;
+  }
+
+  :focus-visible {
+    outline: 3px solid var(--color-primary);
+    outline-offset: 2px;
+  }
+
+  dialog::backdrop {
+    background: rgb(15 23 42 / 0.6);
+  }
+}
