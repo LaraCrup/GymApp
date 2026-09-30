@@ -55,6 +55,44 @@ isOneToOne: false
                   Relationships: [
                     
                   ]
+                },"routine_exercises": {
+                  Row: {
+                    "created_at": string,"exercise_id": string,"id": string,"position": number,"reps": number,"routine_id": string,"sets": number,"updated_at": string,"user_id": string,"weight_kg": number
+                  }
+                  Insert: {
+                    "created_at"?: string,"exercise_id": string,"id"?: string,"position"?: number,"reps"?: number,"routine_id": string,"sets"?: number,"updated_at"?: string,"user_id"?: string,"weight_kg"?: number
+                  }
+                  Update: {
+                    "created_at"?: string,"exercise_id"?: string,"id"?: string,"position"?: number,"reps"?: number,"routine_id"?: string,"sets"?: number,"updated_at"?: string,"user_id"?: string,"weight_kg"?: number
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "routine_exercises_exercise_id_fkey"
+      columns: ["exercise_id"]
+isOneToOne: false
+      referencedRelation: "exercises"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "routine_exercises_routine_id_fkey"
+      columns: ["routine_id"]
+isOneToOne: false
+      referencedRelation: "routines"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"routines": {
+                  Row: {
+                    "created_at": string,"id": string,"name": string,"updated_at": string,"user_id": string
+                  }
+                  Insert: {
+                    "created_at"?: string,"id"?: string,"name": string,"updated_at"?: string,"user_id"?: string
+                  }
+                  Update: {
+                    "created_at"?: string,"id"?: string,"name"?: string,"updated_at"?: string,"user_id"?: string
+                  }
+                  Relationships: [
+                    
+                  ]
                 }
           }
           Views: {
@@ -66,6 +104,9 @@ isOneToOne: false
                            },
 "normalize_text":
 { Args: { "t": string }; Returns: string
+                           },
+"reorder_routine_exercises":
+{ Args: { "p_ids": (string)[],"p_routine_id": string }; Returns: undefined
                            },
 "search_exercises":
 { Args: { "group_id"?: string,"max_results"?: number,"q"?: string }; Returns: {

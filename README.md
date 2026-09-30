@@ -60,6 +60,14 @@ where email = 'tu-email@ejemplo.com';
 - Búsqueda (`search_exercises`): por nombre o alias, sin importar tildes ni mayúsculas, tolera errores de tipeo.
 - Antes de crear uno nuevo se muestran los parecidos (`similar_exercises`) para no duplicar.
 
+## Rutinas
+
+- Cada persona ve y edita **solo sus rutinas** (RLS en `routines` y `routine_exercises`).
+- Cada ejercicio de una rutina guarda series, repeticiones y peso actual.
+- Orden editable con flechas (función `reorder_routine_exercises`, en una sola transacción).
+- «Agrupar por músculo» se recuerda en cada celular.
+- No se puede borrar del catálogo un ejercicio que está en alguna rutina.
+
 ## Base de datos
 
 - Todo cambio va como migración en `supabase/migrations/` (`supabase migration new <nombre>`), nunca a mano en el dashboard.

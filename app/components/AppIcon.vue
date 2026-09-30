@@ -15,6 +15,8 @@ const paths = {
   edit: 'M4 20h4L19 9l-4-4L4 16v4ZM13.5 6.5l4 4',
   trash: 'M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13',
   chevron: 'M9 6l6 6-6 6',
+  up: 'M12 19V5M5 12l7-7 7 7',
+  down: 'M12 5v14M19 12l-7 7-7-7',
 } as const
 
 export type IconName = keyof typeof paths

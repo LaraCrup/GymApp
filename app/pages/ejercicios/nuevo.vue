@@ -8,6 +8,7 @@ const catalog = useCatalog()
 const toast = useToast()
 
 const draft = ref(emptyDraft(typeof route.query.nombre === 'string' ? route.query.nombre : ''))
+const routineId = typeof route.query.rutina === 'string' ? route.query.rutina : null
 
 // ── Parecidos: se buscan mientras se escribe, para no duplicar el catálogo compartido ──
 type Similar = Awaited<ReturnType<typeof catalog.similar>>
@@ -48,7 +49,11 @@ async function save(input: ExerciseInput) {
   try {
     const created = await catalog.create(input)
     toast.ok('Ejercicio creado')
-    await navigateTo(`/ejercicios/${created.id}`, { replace: true })
+    // Si se llegó desde "Agregar ejercicio" de una rutina, se vuelve ahí con el nuevo ya elegido.
+    await navigateTo(
+      routineId ? `/rutinas/${routineId}/agregar?ejercicio=${created.id}` : `/ejercicios/${created.id}`,
+      { replace: true },
+    )
   }
   catch (e) {
     const code = (e as { code?: string }).code
@@ -63,7 +68,7 @@ async function save(input: ExerciseInput) {
 </script>
 
 <template>
-  <AppHeader title="Nuevo ejercicio" back="/ejercicios" />
+  <AppHeader title="Nuevo ejercicio" :back="routineId ? `/rutinas/${routineId}/agregar` : '/ejercicios'" />
   <div class="p-4">
     <ExerciseForm v-model="draft" submit-label="Crear ejercicio" :loading="saving" :error="error" @submit="save">
       <template #after-name>

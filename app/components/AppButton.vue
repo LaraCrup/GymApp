@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { RouteLocationRaw } from 'vue-router'
 
-type Variant = 'primary' | 'secondary' | 'danger' | 'ghost'
+type Variant = 'primary' | 'secondary' | 'danger' | 'ghost' | 'danger-ghost'
 
 const props = withDefaults(
   defineProps<{
@@ -21,6 +21,7 @@ const variants: Record<Variant, string> = {
   secondary: 'bg-white text-primary border-2 border-primary active:bg-primary-soft',
   danger: 'bg-danger text-white active:bg-red-900',
   ghost: 'bg-transparent text-primary active:bg-primary-soft',
+  'danger-ghost': 'bg-transparent text-danger active:bg-danger-soft',
 }
 
 const classes = computed(() => [
