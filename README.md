@@ -1,33 +1,40 @@
 # Mis Rutinas
 
-App web (PWA) para anotar rutinas de gimnasio, pesos y progreso. Privada: solo entra gente invitada.
+App web instalable (PWA) para anotar rutinas de gimnasio, pesos y progreso. Privada: solo entra gente invitada.
 
-Stack: Nuxt 4 (SPA) + TypeScript · Supabase (Postgres + Auth) · Tailwind CSS v4.
+- Producción: https://progreso-gimnasio.vercel.app
+- Stack: Nuxt 4 (SPA) + TypeScript · Supabase (Postgres + Auth) · Tailwind CSS v4 · `@vite-pwa/nuxt`
 
-> README en construcción: se completa etapa por etapa (catálogo, rutinas, pesos, PWA y deploy).
+## Qué hace
+
+- **Rutinas** propias (crear, renombrar, borrar), con ejercicios ordenables y la opción de agruparlos por músculo.
+- **Pesos**: botones −2,5 / −1 / +1 / +2,5 (o escribirlo), guardado automático, «la vez anterior».
+- **Historial**: un punto por día y por ejercicio; gráfico y lista en la ficha del ejercicio.
+- **Catálogo compartido** con alias («Remo con barra» = «Remo inclinado» = «Bent over row»), búsqueda sin tildes y tolerante a errores, videos de YouTube embebidos (`youtube-nocookie`, carga al tocar).
+- **Instalable** en la pantalla de inicio (Android e iPhone) y abre sin conexión.
 
 ## Requisitos
 
 - Node 22+ y npm
-- Docker (en Mac: [OrbStack](https://orbstack.dev)) — para correr Supabase en local
+- Docker (en Mac: [OrbStack](https://orbstack.dev)) para correr Supabase en local
 - [Supabase CLI](https://supabase.com/docs/guides/cli) 2.118+
 
 ## Levantar en local
 
 ```bash
 npm install --legacy-peer-deps   # npm 10.9.2 tiene un bug con Nuxt 4 sin este flag
-supabase start                   # levanta Postgres, Auth, Studio y Mailpit; aplica las migraciones
+supabase start                   # Postgres, Auth, Studio y Mailpit; aplica migraciones
 cp .env.example .env             # completar con API_URL y PUBLISHABLE_KEY que imprime `supabase start`
 npm run dev                      # http://localhost:3000
 ```
 
-Servicios locales:
-
 | Qué | URL |
 |---|---|
 | App | http://localhost:3000 |
-| Supabase Studio (base, usuarios) | http://127.0.0.1:54323 |
-| Mailpit (los mails que "manda" la app) | http://127.0.0.1:54324 |
+| Supabase Studio (tablas, usuarios, SQL) | http://127.0.0.1:54323 |
+| Mailpit (los mails que "manda" la app en local) | http://127.0.0.1:54324 |
+
+Para entrar en local, creá un usuario en Studio → Authentication → *Add user* (con «Auto Confirm User»), o invitalo y abrí el mail en Mailpit.
 
 ## Variables de entorno
 
@@ -36,54 +43,82 @@ Servicios locales:
 | `SUPABASE_URL` | URL del proyecto Supabase |
 | `SUPABASE_KEY` | Clave **publishable** (antes "anon"). Es pública: los permisos los pone RLS |
 
-Nunca va en el cliente la clave secreta / `service_role`. La app no la necesita.
+La clave secreta / `service_role` **nunca** va en la app ni en Vercel: no se usa.
+
+## Supabase en producción
+
+Proyecto «App Gym» (`lgbohqnlqytszrrwpocz`, São Paulo). Todo cambio de base va como migración versionada; nada se hace a mano en el dashboard.
+
+```bash
+supabase login                   # una vez, con la cuenta dueña del proyecto
+supabase link                    # elegir el proyecto
+supabase db push                 # aplica las migraciones pendientes
+```
+
+**Config de Auth** (registro cerrado, mails en español, Site URL, SMTP) está en `supabase/config.toml`; lo propio de producción va en `[remotes.production]`. Para aplicarla:
+
+```bash
+SUPABASE_SMTP_USER='cuenta@gmail.com' SUPABASE_SMTP_PASS='xxxx xxxx xxxx xxxx' supabase config push
+```
+
+- El SMTP es Gmail con una **contraseña de aplicación** (https://myaccount.google.com/apppasswords; requiere verificación en dos pasos). Sin SMTP propio, el plan gratis no deja usar plantillas propias y solo manda mails a miembros del proyecto.
+- Ojo: `[auth.email] enable_signup = false` apaga el login por email entero. El registro se cierra con `[auth] enable_signup = false`.
 
 ## Usuarios
 
-**Invitar a alguien:** Supabase Studio → Authentication → Users → *Invite user* → escribir el email.
-Le llega un mail «Te invitaron a Mis Rutinas»; toca *Activar mi cuenta* y elige su contraseña.
-El registro público está desactivado (`[auth] enable_signup = false` en `supabase/config.toml`).
+- **Invitar**: dashboard → Authentication → Users → *Invite user*. Llega «Te invitaron a Mis Rutinas» → *Activar mi cuenta* → elige contraseña (`/clave`). El link se activa con un toque, así los antivirus del mail no lo gastan.
+- **Olvidó la contraseña**: «Me olvidé la contraseña» en la app (mail con link a `/clave`).
+- **Admin del catálogo** (edita y borra ejercicios, carga videos). En el SQL Editor, y después volver a entrar:
+  ```sql
+  update auth.users
+  set raw_app_meta_data = raw_app_meta_data || '{"is_admin": true}'
+  where email = 'tu-email@ejemplo.com';
+  ```
 
-**Marcar a alguien como admin del catálogo** (SQL editor de Studio). Tiene que volver a entrar para que se aplique:
+## Deploy (Vercel)
 
-```sql
-update auth.users
-set raw_app_meta_data = raw_app_meta_data || '{"is_admin": true}'
-where email = 'tu-email@ejemplo.com';
-```
-
-## Catálogo de ejercicios
-
-- Compartido entre todas las personas. Cualquiera puede **crear** ejercicios; solo el admin puede **editarlos y borrarlos** (RLS en la base).
-- Carga inicial: 67 ejercicios con alias y grupo muscular (`supabase/migrations/*_catalog_seed.sql`), **sin videos**.
-- **Agregar un video:** entrar como admin → Ejercicios → tocar el ejercicio → *Editar* → pegar el link de YouTube (sirven los de *Compartir*, `watch?v=`, `youtu.be` y `shorts`). Se guarda solo el ID del video y se muestra con `youtube-nocookie.com`, recién cuando se toca *Ver video*.
-- Búsqueda (`search_exercises`): por nombre o alias, sin importar tildes ni mayúsculas, tolera errores de tipeo.
-- Antes de crear uno nuevo se muestran los parecidos (`similar_exercises`) para no duplicar.
-
-## Rutinas
-
-- Cada persona ve y edita **solo sus rutinas** (RLS en `routines` y `routine_exercises`).
-- Cada ejercicio de una rutina guarda series, repeticiones y peso actual.
-- Orden editable con flechas (función `reorder_routine_exercises`, en una sola transacción).
-- «Agrupar por músculo» se recuerda en cada celular.
-- No se puede borrar del catálogo un ejercicio que está en alguna rutina.
-
-## Pesos e historial
-
-- En cada ejercicio de una rutina: botones −2,5 / −1 / +1 / +2,5 o escribir el peso. Se guarda solo 1,2 s después del último toque (o al salir de la pantalla); si falla, avisa y deja reintentar.
-- El historial (`weight_logs`) lo escribe un trigger de la base, no la app: **un punto por día** por persona y ejercicio (el último peso del día), compartido entre rutinas. Borrar una rutina no borra el historial.
-- La ficha de cada ejercicio muestra «Mi progreso»: resumen, gráfico y lista por día.
+- Vercel deploya solo cada push a `main`. Variables en Settings → Environment Variables: `SUPABASE_URL` y `SUPABASE_KEY` del proyecto de producción.
+- **Orden**: si un cambio trae migraciones, primero `supabase db push` y después push a `main`. Al revés, la app nueva busca tablas que todavía no existen.
+- La PWA se actualiza sola: al abrir la app después de un deploy se carga la versión nueva.
 
 ## Base de datos
 
-- Todo cambio va como migración en `supabase/migrations/` (`supabase migration new <nombre>`), nunca a mano en el dashboard.
-- `supabase db reset` — recrea la base local desde cero con migraciones + seed.
-- `npm run db:types` — regenera `app/types/database.types.ts` desde la base local.
+| Tabla | Qué guarda | Quién ve / edita |
+|---|---|---|
+| `muscle_groups` | 11 grupos fijos | todos leen |
+| `exercises` | catálogo con alias y `youtube_id` | todos leen y crean; solo admin edita y borra |
+| `routines` | rutinas | cada persona las suyas |
+| `routine_exercises` | ejercicio en rutina: orden, series, reps, peso | cada persona los suyos |
+| `weight_logs` | historial: un punto por día por persona y ejercicio | cada persona lee el suyo; lo escribe un trigger |
+
+- Funciones: `search_exercises`, `similar_exercises`, `reorder_routine_exercises`, `previous_weights`, `is_admin`.
+- No se puede borrar del catálogo un ejercicio que alguien usa en una rutina o tiene en su historial.
+- `supabase db reset` recrea la base local (migraciones + catálogo inicial de 67 ejercicios, sin videos).
+- `npm run db:types` regenera `app/types/database.types.ts`.
 
 ## Tests
 
 ```bash
-npm test            # unitarios (Vitest) de app/utils
-npm run db:test     # tests de la base (pgTAP): permisos, funciones, RLS — correr después de `supabase db reset`
+npm test            # unitarios (Vitest): links de YouTube, pesos, fechas, guardado automático, errores
+npm run db:test     # pgTAP: permisos (RLS), búsqueda, historial — correr después de `supabase db reset`
 npm run typecheck
 ```
+
+## Estructura
+
+```
+app/
+  pages/          entrar, clave, recuperar, cuenta, index (rutinas), rutinas/[id], ejercicios/…
+  components/     piezas chicas y reutilizables (AppButton, AppSheet, WeightControl, WeightChart…)
+  composables/    datos (useRoutines, useCatalog, useWeightHistory) y comportamiento (useAutoSave, useConfirm…)
+  utils/          funciones puras con tests (youtube, numbers, dates, friendlyError…)
+supabase/
+  migrations/     esquema, permisos y catálogo inicial
+  tests/          pgTAP
+  templates/      mails de invitación y recuperación
+```
+
+## Notas
+
+- TypeScript fijado en 5.x: `vue-tsc` todavía no soporta TypeScript 7.
+- Tipografía: base 16px, títulos hasta 20px; áreas táctiles de 48px como mínimo.
