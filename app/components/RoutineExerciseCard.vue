@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import type { RoutineItem } from '~/composables/useRoutines'
+import type { WeightPoint } from '~/composables/useWeightHistory'
 
-defineProps<{ item: RoutineItem; editing: boolean; first: boolean; last: boolean }>()
+defineProps<{ item: RoutineItem; editing: boolean; first: boolean; last: boolean; previous?: WeightPoint }>()
 defineEmits<{ settings: []; up: []; down: []; remove: [] }>()
 </script>
 
@@ -40,18 +41,16 @@ defineEmits<{ settings: []; up: []; down: []; remove: [] }>()
       <AppIcon name="trash" :size="20" />
       Quitar de la rutina
     </AppButton>
-    <button
-      v-else
-      type="button"
-      class="flex min-h-12 items-center justify-between gap-2 rounded-xl bg-surface px-3 text-left active:bg-primary-soft"
-      @click="$emit('settings')"
-    >
-      <span class="text-sm">
-        <strong>{{ item.sets }}</strong> series × <strong>{{ item.reps }}</strong> reps
-        <span class="text-muted"> · </span>
-        <strong>{{ formatKg(item.weight_kg) }}</strong>
-      </span>
-      <span class="text-sm font-semibold text-primary">Cambiar</span>
-    </button>
+    <template v-else>
+      <button
+        type="button"
+        class="flex min-h-12 items-center justify-between gap-2 rounded-xl bg-surface px-3 text-left active:bg-primary-soft"
+        @click="$emit('settings')"
+      >
+        <span class="text-sm"><strong>{{ item.sets }}</strong> series × <strong>{{ item.reps }}</strong> reps</span>
+        <span class="text-sm font-semibold text-primary">Cambiar</span>
+      </button>
+      <WeightControl v-model="item.weight_kg" :item-id="item.id" :exercise-name="item.exercise.name" :previous="previous" />
+    </template>
   </article>
 </template>

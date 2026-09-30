@@ -68,6 +68,12 @@ where email = 'tu-email@ejemplo.com';
 - «Agrupar por músculo» se recuerda en cada celular.
 - No se puede borrar del catálogo un ejercicio que está en alguna rutina.
 
+## Pesos e historial
+
+- En cada ejercicio de una rutina: botones −2,5 / −1 / +1 / +2,5 o escribir el peso. Se guarda solo 1,2 s después del último toque (o al salir de la pantalla); si falla, avisa y deja reintentar.
+- El historial (`weight_logs`) lo escribe un trigger de la base, no la app: **un punto por día** por persona y ejercicio (el último peso del día), compartido entre rutinas. Borrar una rutina no borra el historial.
+- La ficha de cada ejercicio muestra «Mi progreso»: resumen, gráfico y lista por día.
+
 ## Base de datos
 
 - Todo cambio va como migración en `supabase/migrations/` (`supabase migration new <nombre>`), nunca a mano en el dashboard.

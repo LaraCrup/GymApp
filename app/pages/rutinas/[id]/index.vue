@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import type { ItemSettings, RoutineItem } from '~/composables/useRoutines'
+import type { RoutineItem } from '~/composables/useRoutines'
+import type { WeightPoint } from '~/composables/useWeightHistory'
 
 const route = useRoute()
 const id = route.params.id as string
@@ -18,6 +19,21 @@ const { data: routine, status, error, refresh } = useLazyAsyncData(`routine-${id
 useHead(() => ({ title: routine.value?.name ?? 'Rutina' }))
 
 const items = computed(() => routine.value?.items ?? [])
+
+// "La vez anterior": ayuda, no es crítico; si falla, la rutina se usa igual.
+const history = useWeightHistory()
+const previous = ref(new Map<string, WeightPoint>())
+watch(
+  () => items.value.map(i => i.exercise_id).join(),
+  async () => {
+    try {
+      previous.value = await history.previous(items.value.map(i => i.exercise_id))
+    }
+    catch {
+      previous.value = new Map()
+    }
+  },
+)
 const editing = ref(false)
 const grouped = useLocalPref('agrupar-por-musculo', false)
 
@@ -29,10 +45,10 @@ const sections = computed(() => {
     .filter(s => s.items.length)
 })
 
-// ── Series, reps y peso ──
+// ── Series y reps (el peso tiene sus propios botones en la tarjeta) ──
 const settingsItem = ref<RoutineItem | null>(null)
 const settingsOpen = ref(false)
-const settingsDraft = ref<ItemSettings>({ sets: 3, reps: 10, weight_kg: 0 })
+const settingsDraft = ref({ sets: 3, reps: 10, weight_kg: 0 })
 const savingSettings = ref(false)
 
 function openSettings(item: RoutineItem) {
@@ -46,8 +62,9 @@ async function saveSettings() {
   if (!item) return
   savingSettings.value = true
   try {
-    await routines.updateItem(item.id, settingsDraft.value)
-    Object.assign(item, settingsDraft.value)
+    const { sets, reps } = settingsDraft.value
+    await routines.updateItem(item.id, { sets, reps })
+    Object.assign(item, { sets, reps })
     settingsOpen.value = false
     toast.ok('Guardado')
   }
@@ -193,6 +210,7 @@ async function removeRoutine() {
           :editing="editing"
           :first="items.indexOf(item) === 0"
           :last="items.indexOf(item) === items.length - 1"
+          :previous="previous.get(item.exercise_id)"
           @settings="openSettings(item)"
           @up="move(items.indexOf(item), -1)"
           @down="move(items.indexOf(item), 1)"
@@ -237,7 +255,7 @@ async function removeRoutine() {
 
   <AppSheet v-model:open="settingsOpen" :title="settingsItem?.exercise.name ?? ''">
     <form class="flex flex-col gap-4" novalidate @submit.prevent="saveSettings">
-      <ItemSettingsFields v-model="settingsDraft" />
+      <ItemSettingsFields v-model="settingsDraft" :with-weight="false" />
       <AppButton type="submit" size="lg" block :loading="savingSettings">Guardar</AppButton>
     </form>
   </AppSheet>

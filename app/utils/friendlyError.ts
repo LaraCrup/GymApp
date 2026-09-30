@@ -19,7 +19,7 @@ const byCode: Record<string, string> = {
 
   // Base de datos (Postgres / PostgREST)
   '23505': 'Ya existe uno con ese nombre. Buscalo en la lista.',
-  '23503': 'No se puede borrar porque se está usando en alguna rutina.',
+  '23503': 'No se puede borrar porque alguien lo usa en una rutina o tiene historial de pesos.',
   '23514': 'Algún dato no es válido. Revisalo y probá de nuevo.',
   '42501': 'No tenés permiso para hacer esto.',
   PGRST116: 'No lo encontramos. Puede que lo hayan borrado.',

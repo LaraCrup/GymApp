@@ -93,6 +93,31 @@ isOneToOne: false
                   Relationships: [
                     
                   ]
+                },"weight_logs": {
+                  Row: {
+                    "exercise_id": string,"id": number,"logged_on": string,"routine_exercise_id": string | null,"updated_at": string,"user_id": string,"weight_kg": number
+                  }
+                  Insert: {
+                    "exercise_id": string,"id"?: never,"logged_on": string,"routine_exercise_id"?: string | null,"updated_at"?: string,"user_id": string,"weight_kg": number
+                  }
+                  Update: {
+                    "exercise_id"?: string,"id"?: never,"logged_on"?: string,"routine_exercise_id"?: string | null,"updated_at"?: string,"user_id"?: string,"weight_kg"?: number
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "weight_logs_exercise_id_fkey"
+      columns: ["exercise_id"]
+isOneToOne: false
+      referencedRelation: "exercises"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "weight_logs_routine_exercise_id_fkey"
+      columns: ["routine_exercise_id"]
+isOneToOne: false
+      referencedRelation: "routine_exercises"
+      referencedColumns: ["id"]
+    }
+                  ]
                 }
           }
           Views: {
@@ -104,6 +129,11 @@ isOneToOne: false
                            },
 "normalize_text":
 { Args: { "t": string }; Returns: string
+                           },
+"previous_weights":
+{ Args: { "p_exercise_ids": (string)[] }; Returns: {
+              "exercise_id": string,"logged_on": string,"weight_kg": number
+            }[]
                            },
 "reorder_routine_exercises":
 { Args: { "p_ids": (string)[],"p_routine_id": string }; Returns: undefined

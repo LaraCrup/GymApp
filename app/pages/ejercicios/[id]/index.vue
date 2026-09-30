@@ -70,6 +70,8 @@ async function remove() {
       <p class="mt-1">{{ exercise.aliases.join(' · ') }}</p>
     </section>
 
+    <WeightProgress :exercise-id="exercise.id" />
+
     <div v-if="isAdmin" class="flex flex-col gap-3 border-t border-line pt-4">
       <p v-if="!exercise.youtube_id" class="text-sm text-muted">Tocá «Editar» para agregarle un video.</p>
       <AppButton variant="secondary" block :to="`/ejercicios/${exercise.id}/editar`">

@@ -11,8 +11,10 @@ const text = ref(formatNumber(model.value))
 watch(model, v => (text.value = formatNumber(v)))
 
 function set(n: number) {
-  model.value = clampNumber(n, props.min, props.max)
-  text.value = formatNumber(model.value)
+  // `next` y no `model.value`: con defineModel, el valor nuevo llega recién cuando el padre se actualiza.
+  const next = clampNumber(n, props.min, props.max)
+  model.value = next
+  text.value = formatNumber(next)
 }
 
 // Al salir del campo: si se escribió algo inválido, vuelve al último valor bueno.
