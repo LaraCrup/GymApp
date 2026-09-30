@@ -10,7 +10,7 @@ useHead({ title: 'Mis rutinas' })
     text="Una rutina es la lista de ejercicios que hacés un día en el gimnasio. Por ejemplo: «Día 1 - Piernas»."
   >
     <AppButton size="lg" block disabled>
-      <AppIcon name="plus" :size="28" />
+      <AppIcon name="plus" :size="20" />
       Crear mi primera rutina
     </AppButton>
   </EmptyState>

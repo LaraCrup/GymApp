@@ -26,7 +26,7 @@ const variants: Record<Variant, string> = {
 const classes = computed(() => [
   'inline-flex items-center justify-center gap-2 rounded-xl font-semibold select-none',
   'transition-colors disabled:opacity-50 disabled:pointer-events-none',
-  props.size === 'lg' ? 'min-h-16 px-6 text-xl' : 'min-h-12 px-5 text-lg',
+  props.size === 'lg' ? 'min-h-14 px-6 text-base' : 'min-h-12 px-4 text-base',
   props.block && 'w-full',
   variants[props.variant],
 ])

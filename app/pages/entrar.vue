@@ -38,11 +38,11 @@ async function submit() {
 
 <template>
   <div class="mb-8 flex flex-col items-center gap-3 text-center">
-    <span class="flex size-20 items-center justify-center rounded-full bg-primary text-white">
-      <AppIcon name="dumbbell" :size="44" />
+    <span class="flex size-14 items-center justify-center rounded-full bg-primary text-white">
+      <AppIcon name="dumbbell" :size="28" />
     </span>
-    <h1 class="text-3xl font-bold">Mis Rutinas</h1>
-    <p class="text-muted">Entrá con tu email y tu contraseña.</p>
+    <h1 class="text-xl font-bold">Mis Rutinas</h1>
+    <p class="text-sm text-muted">Entrá con tu email y tu contraseña.</p>
   </div>
 
   <form class="flex flex-col gap-5" novalidate @submit.prevent="submit">
@@ -54,6 +54,6 @@ async function submit() {
 
   <div class="mt-6 flex flex-col items-center gap-4 text-center">
     <AppButton variant="ghost" to="/recuperar">Me olvidé la contraseña</AppButton>
-    <p class="text-muted">¿No tenés cuenta? Pedile a {{ adminName }} que te invite.</p>
+    <p class="text-sm text-muted">¿No tenés cuenta? Pedile a {{ adminName }} que te invite.</p>
   </div>
 </template>

@@ -39,8 +39,8 @@ async function submit() {
   </template>
 
   <template v-else>
-    <h1 class="text-3xl font-bold">¿Te olvidaste la contraseña?</h1>
-    <p class="mt-2 mb-6 text-muted">Te mandamos un mail para que elijas una nueva.</p>
+    <h1 class="text-xl font-bold">¿Te olvidaste la contraseña?</h1>
+    <p class="mt-1 mb-6 text-sm text-muted">Te mandamos un mail para que elijas una nueva.</p>
 
     <form class="flex flex-col gap-5" novalidate @submit.prevent="submit">
       <AppInput v-model="email" label="Tu email" type="email" autocomplete="email" inputmode="email" />

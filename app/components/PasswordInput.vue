@@ -24,7 +24,7 @@ const visible = ref(false)
     <template #after>
       <button
         type="button"
-        class="min-h-14 shrink-0 rounded-xl border-2 border-line bg-white px-3 text-base font-semibold text-primary active:bg-primary-soft"
+        class="min-h-12 shrink-0 rounded-xl border-2 border-line bg-white px-3 text-sm font-semibold text-primary active:bg-primary-soft"
         :aria-pressed="visible"
         @click="visible = !visible"
       >

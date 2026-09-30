@@ -61,8 +61,8 @@ async function save() {
 <template>
   <!-- 1. Activar el link -->
   <template v-if="step === 'activate'">
-    <h1 class="text-3xl font-bold">{{ isInvite ? '¡Hola! 👋' : 'Cambiar contraseña' }}</h1>
-    <p class="mt-2 mb-6 text-muted">
+    <h1 class="text-xl font-bold">{{ isInvite ? '¡Hola! 👋' : 'Cambiar contraseña' }}</h1>
+    <p class="mt-1 mb-6 text-sm text-muted">
       {{ isInvite
         ? 'Te invitaron a Mis Rutinas. Tocá el botón para activar tu cuenta.'
         : 'Tocá el botón para elegir tu contraseña nueva.' }}
@@ -77,8 +77,8 @@ async function save() {
 
   <!-- 2. Elegir la contraseña -->
   <template v-else-if="step === 'form'">
-    <h1 class="text-3xl font-bold">Elegí tu contraseña</h1>
-    <p class="mt-2 mb-6 text-muted">
+    <h1 class="text-xl font-bold">Elegí tu contraseña</h1>
+    <p class="mt-1 mb-6 text-sm text-muted">
       La vas a usar para entrar a la app junto con tu email. Anotala en un lugar seguro.
     </p>
     <form class="flex flex-col gap-5" novalidate @submit.prevent="save">

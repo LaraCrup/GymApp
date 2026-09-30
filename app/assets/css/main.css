@@ -18,9 +18,9 @@
 }
 
 @layer base {
-  /* 112.5% = 18px de base: todo lo que usa rem (textos, espacios, alturas) escala junto. */
+  /* Base de 16px: es también el mínimo para que iPhone no haga zoom al tocar un campo. */
   html {
-    font-size: 112.5%;
+    font-size: 100%;
     -webkit-text-size-adjust: 100%;
     color-scheme: light;
   }

@@ -32,9 +32,9 @@ async function logout() {
   <AppHeader title="Mi cuenta" />
   <div class="flex flex-col gap-6 p-4">
     <section class="rounded-2xl bg-white p-5">
-      <p class="text-muted">Entraste como</p>
-      <p class="mt-1 text-xl font-semibold break-all">{{ user?.email }}</p>
-      <p v-if="isAdmin" class="mt-3 inline-block rounded-lg bg-primary-soft px-3 py-1 font-semibold text-primary-strong">
+      <p class="text-sm text-muted">Entraste como</p>
+      <p class="mt-1 text-base font-semibold break-all">{{ user?.email }}</p>
+      <p v-if="isAdmin" class="mt-3 inline-block rounded-lg bg-primary-soft px-3 py-1 text-sm font-semibold text-primary-strong">
         Administrás el catálogo de ejercicios
       </p>
     </section>

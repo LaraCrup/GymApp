@@ -12,7 +12,7 @@ const styles = {
   <!-- Queda arriba de la barra inferior, cerca del pulgar y sin tapar el contenido de arriba. -->
   <div
     class="pointer-events-none fixed inset-x-0 z-40 flex justify-center px-4"
-    style="bottom: calc(5.5rem + env(safe-area-inset-bottom))"
+    style="bottom: calc(4.5rem + env(safe-area-inset-bottom))"
     aria-live="polite"
   >
     <Transition
@@ -27,11 +27,11 @@ const styles = {
         :key="current.id"
         type="button"
         :role="current.kind === 'error' ? 'alert' : 'status'"
-        class="pointer-events-auto flex w-full max-w-md items-center gap-3 rounded-xl px-4 py-3 text-left text-lg font-semibold shadow-lg"
+        class="pointer-events-auto flex w-full max-w-md items-center gap-3 rounded-xl px-4 py-3 text-left text-sm font-semibold shadow-lg"
         :class="styles[current.kind]"
         @click="dismiss"
       >
-        <AppIcon :name="current.kind === 'error' ? 'alert' : 'check'" :size="28" />
+        <AppIcon :name="current.kind === 'error' ? 'alert' : 'check'" :size="20" />
         <span class="flex-1">{{ current.message }}</span>
       </button>
     </Transition>

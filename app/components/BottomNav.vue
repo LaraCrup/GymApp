@@ -26,10 +26,10 @@ function isActive(to: string) {
         <NuxtLink
           :to="item.to"
           :aria-current="isActive(item.to) ? 'page' : undefined"
-          class="flex min-h-16 flex-col items-center justify-center gap-0.5 border-t-4 text-base"
+          class="flex min-h-14 flex-col items-center justify-center gap-0.5 border-t-4 text-xs"
           :class="isActive(item.to) ? 'border-primary font-bold text-primary' : 'border-transparent text-muted'"
         >
-          <AppIcon :name="item.icon" :size="28" />
+          <AppIcon :name="item.icon" :size="22" />
           {{ item.label }}
         </NuxtLink>
       </li>
