@@ -5,7 +5,7 @@ export type RoutineSummary = Routine & { exercise_count: number }
 export type RoutineItem = Tables<'routine_exercises'> & { exercise: Tables<'exercises'> }
 export type RoutineWithItems = Routine & { items: RoutineItem[] }
 export type RoutineItemWithRoutine = Tables<'routine_exercises'> & { routine: Pick<Routine, 'id' | 'name'> }
-export type ItemSettings = Pick<Tables<'routine_exercises'>, 'sets' | 'reps' | 'weight_kg'>
+export type ItemSettings = Pick<Tables<'routine_exercises'>, 'sets' | 'reps' | 'seconds' | 'weight_kg'>
 
 /** Rutinas de la persona logueada. RLS en la base garantiza que nadie vea las de otro. */
 export function useRoutines() {
@@ -32,7 +32,7 @@ export function useRoutines() {
     return { ...routine, items: [...routine_exercises].sort((a, b) => a.position - b.position) }
   }
 
-  /** Un ejercicio dentro de una rutina (series, reps y peso), con el nombre de la rutina. */
+  /** Un ejercicio dentro de una rutina (series, reps o tiempo, y peso), con el nombre de la rutina. */
   async function getItem(routineId: string, exerciseId: string): Promise<RoutineItemWithRoutine | null> {
     const { data, error } = await supabase
       .from('routine_exercises')

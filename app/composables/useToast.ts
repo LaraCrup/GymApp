@@ -1,9 +1,18 @@
+import type { RouteLocationRaw } from 'vue-router'
+
 export type ToastKind = 'ok' | 'error' | 'info'
+
+/** Botón opcional dentro del aviso, por ejemplo «Ver rutina». */
+export interface ToastAction {
+  label: string
+  to: RouteLocationRaw
+}
 
 export interface Toast {
   id: number
   kind: ToastKind
   message: string
+  action?: ToastAction
 }
 
 let nextId = 1
@@ -16,20 +25,20 @@ export function useToast() {
     current.value = null
   }
 
-  function show(message: string, kind: ToastKind) {
+  function show(message: string, kind: ToastKind, action?: ToastAction) {
     const id = nextId++
-    current.value = { id, kind, message }
-    // Los errores quedan más tiempo para que dé tiempo a leerlos.
+    current.value = { id, kind, message, action }
+    // Los errores, y los avisos con botón, quedan más tiempo para que dé tiempo a leerlos (o tocarlo).
     setTimeout(() => {
       if (current.value?.id === id) dismiss()
-    }, kind === 'error' ? 7000 : 2500)
+    }, kind === 'error' ? 7000 : action ? 5000 : 3000)
   }
 
   return {
     current,
     dismiss,
-    ok: (message: string) => show(message, 'ok'),
+    ok: (message: string, action?: ToastAction) => show(message, 'ok', action),
     error: (message: string) => show(message, 'error'),
-    info: (message: string) => show(message, 'info'),
+    info: (message: string, action?: ToastAction) => show(message, 'info', action),
   }
 }

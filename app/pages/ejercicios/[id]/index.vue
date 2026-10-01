@@ -34,7 +34,7 @@ function openPicker() {
   void loadRoutines()
 }
 
-// ── Abierto desde una rutina: acá se cambian el peso, las series y las reps ──
+// ── Abierto desde una rutina: acá se cambian el peso, las series y las reps (o el tiempo) ──
 const history = useWeightHistory()
 const { data: item, status: itemStatus, error: itemError, refresh: refreshItem } = useLazyAsyncData(
   `routine-item-${fromRoutine}-${id}`,
@@ -49,12 +49,12 @@ const { data: item, status: itemStatus, error: itemError, refresh: refreshItem }
 )
 
 const settingsOpen = ref(false)
-const settingsDraft = ref<ItemSettings>({ sets: 3, reps: 10, weight_kg: 0 })
+const settingsDraft = ref<ItemSettings>({ sets: 3, reps: 10, seconds: null, weight_kg: 0 })
 const savingSettings = ref(false)
 
 function openSettings() {
   if (!item.value) return
-  settingsDraft.value = { sets: item.value.sets, reps: item.value.reps, weight_kg: item.value.weight_kg }
+  settingsDraft.value = { sets: item.value.sets, reps: item.value.reps, seconds: item.value.seconds, weight_kg: item.value.weight_kg }
   settingsOpen.value = true
 }
 
@@ -62,9 +62,9 @@ async function saveSettings() {
   if (!item.value) return
   savingSettings.value = true
   try {
-    const { sets, reps } = settingsDraft.value
-    await routines.updateItem(item.value.id, { sets, reps })
-    Object.assign(item.value, { sets, reps })
+    const { sets, reps, seconds } = settingsDraft.value
+    await routines.updateItem(item.value.id, { sets, reps, seconds })
+    Object.assign(item.value, { sets, reps, seconds })
     settingsOpen.value = false
     toast.ok('Guardado')
   }
@@ -180,7 +180,8 @@ async function remove() {
         >
           <span class="text-sm text-muted">
             <strong class="text-ink">{{ item.sets }}</strong> series
-            <template v-if="item.reps === null"><strong class="text-ink">al fallo</strong></template>
+            <template v-if="item.seconds !== null">× <strong class="text-ink">{{ formatSeconds(item.seconds) }}</strong></template>
+            <template v-else-if="item.reps === null"><strong class="text-ink">al fallo</strong></template>
             <template v-else>× <strong class="text-ink">{{ item.reps }}</strong> reps</template>
           </span>
           <span class="text-sm font-semibold text-primary">Cambiar</span>
@@ -235,7 +236,7 @@ async function remove() {
     </AppButton>
   </article>
 
-  <AppSheet v-model:open="settingsOpen" title="Series y repeticiones">
+  <AppSheet v-model:open="settingsOpen" title="Series, reps o tiempo">
     <form class="flex flex-col gap-4" novalidate @submit.prevent="saveSettings">
       <ItemSettingsFields v-model="settingsDraft" :with-weight="false" />
       <AppButton type="submit" size="lg" block :loading="savingSettings">Guardar</AppButton>

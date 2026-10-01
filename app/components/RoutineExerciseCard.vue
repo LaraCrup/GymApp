@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { RoutineItem } from '~/composables/useRoutines'
 
-// Resumen del ejercicio en la rutina. Tocarlo abre su ficha, donde se cambian el peso, las series y las reps.
+// Resumen del ejercicio en la rutina. Tocarlo abre su ficha, donde se cambian el peso, las series y las reps (o el tiempo).
 // `number`: su lugar en la rutina (1, 2, 3…), el orden en que se hacen.
 defineProps<{ item: RoutineItem; number: number; editing: boolean; first: boolean; last: boolean }>()
 defineEmits<{ up: []; down: []; remove: [] }>()
@@ -69,8 +69,14 @@ const { nameOf } = useMuscleGroups()
         <dd class="text-base font-bold">{{ item.sets }}</dd>
       </div>
       <div class="rounded-xl border border-line bg-field py-2">
-        <dt class="text-xs text-muted">Reps</dt>
-        <dd class="text-base font-bold">{{ item.reps ?? 'Al fallo' }}</dd>
+        <template v-if="item.seconds !== null">
+          <dt class="text-xs text-muted">Tiempo</dt>
+          <dd class="text-base font-bold">{{ formatSeconds(item.seconds) }}</dd>
+        </template>
+        <template v-else>
+          <dt class="text-xs text-muted">Reps</dt>
+          <dd class="text-base font-bold">{{ item.reps ?? 'Al fallo' }}</dd>
+        </template>
       </div>
       <div class="rounded-xl border border-line bg-field py-2">
         <dt class="text-xs text-muted">Peso</dt>

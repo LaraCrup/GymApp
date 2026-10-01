@@ -54,6 +54,8 @@
     -webkit-text-size-adjust: 100%;
     color-scheme: dark;
     background: var(--color-surface);
+    /* Sin rebote de la página entera en iPhone: lo que se desliza es el contenido de la app. */
+    overscroll-behavior: none;
   }
 
   /* Sin fondo propio: lo pinta <html>, así los brillos de body::before quedan a la vista. */
@@ -108,7 +110,8 @@
   }
 
   /* Con un panel abierto, la pantalla de atrás no se desliza bajo el dedo. */
-  html:has(dialog[open]) {
+  html:has(dialog[open]),
+  html:has(dialog[open]) .app-scroll {
     overflow: hidden;
   }
 

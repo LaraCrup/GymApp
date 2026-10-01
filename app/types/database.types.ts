@@ -57,13 +57,13 @@ isOneToOne: false
                   ]
                 },"routine_exercises": {
                   Row: {
-                    "created_at": string,"exercise_id": string,"id": string,"position": number,"reps": number | null,"routine_id": string,"sets": number,"updated_at": string,"user_id": string,"weight_kg": number | null
+                    "created_at": string,"exercise_id": string,"id": string,"position": number,"reps": number | null,"routine_id": string,"seconds": number | null,"sets": number,"updated_at": string,"user_id": string,"weight_kg": number | null
                   }
                   Insert: {
-                    "created_at"?: string,"exercise_id": string,"id"?: string,"position"?: number,"reps"?: number | null,"routine_id": string,"sets"?: number,"updated_at"?: string,"user_id"?: string,"weight_kg"?: number | null
+                    "created_at"?: string,"exercise_id": string,"id"?: string,"position"?: number,"reps"?: number | null,"routine_id": string,"seconds"?: number | null,"sets"?: number,"updated_at"?: string,"user_id"?: string,"weight_kg"?: number | null
                   }
                   Update: {
-                    "created_at"?: string,"exercise_id"?: string,"id"?: string,"position"?: number,"reps"?: number | null,"routine_id"?: string,"sets"?: number,"updated_at"?: string,"user_id"?: string,"weight_kg"?: number | null
+                    "created_at"?: string,"exercise_id"?: string,"id"?: string,"position"?: number,"reps"?: number | null,"routine_id"?: string,"seconds"?: number | null,"sets"?: number,"updated_at"?: string,"user_id"?: string,"weight_kg"?: number | null
                   }
                   Relationships: [
                     {

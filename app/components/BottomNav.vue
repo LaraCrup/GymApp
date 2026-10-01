@@ -23,7 +23,7 @@ const activeIndex = computed(() => items.findIndex(item => isActive(item.to)))
 <template>
   <nav
     aria-label="Secciones"
-    class="fixed inset-x-0 bottom-0 z-20 backdrop-blur-xl border-t border-line bg-surface/80 pb-[env(safe-area-inset-bottom)]"
+    class="relative z-20 shrink-0 border-t border-line bg-surface/80 pb-[env(safe-area-inset-bottom)] backdrop-blur-xl"
   >
     <ul class="relative mx-auto grid max-w-xl grid-cols-3">
       <li

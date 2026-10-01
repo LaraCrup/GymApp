@@ -19,17 +19,16 @@ const addedIds = computed(() => routine.value?.items.map(i => i.exercise_id) ?? 
 // ── Vista previa del ejercicio elegido ──
 const selected = ref<Exercise | null>(null)
 const sheetOpen = ref(false)
-const settings = ref<ItemSettings>({ sets: 3, reps: 10, weight_kg: 0 })
+const settings = ref<ItemSettings>({ sets: 3, reps: 10, seconds: null, weight_kg: 0 })
 const saving = ref(false)
 const error = ref('')
-// Lo último que se agregó: se muestra abajo para confirmar sin tapar la lista.
-const lastAdded = ref('')
+const toast = useToast()
 
 const alreadyIn = computed(() => !!selected.value && addedIds.value.includes(selected.value.id))
 
 function pick(exercise: Exercise) {
   selected.value = exercise
-  settings.value = { sets: 3, reps: 10, weight_kg: 0 }
+  settings.value = { sets: 3, reps: 10, seconds: null, weight_kg: 0 }
   error.value = ''
   sheetOpen.value = true
   void prefillWeight(exercise.id)
@@ -69,7 +68,7 @@ async function add() {
   try {
     const item = await routines.addItem(routineId, selected.value.id, settings.value)
     if (routine.value) routine.value = { ...routine.value, items: [...routine.value.items, item] }
-    lastAdded.value = selected.value.name
+    toast.ok(`«${selected.value.name}» agregado`, { label: 'Ver rutina', to: `/rutinas/${routineId}` })
     sheetOpen.value = false
   }
   catch (e) {
@@ -79,13 +78,11 @@ async function add() {
     saving.value = false
   }
 }
-
-const count = computed(() => addedIds.value.length)
 </script>
 
 <template>
   <AppHeader title="Agregar ejercicio" :back="`/rutinas/${routineId}`" />
-  <div class="p-4" :class="{ 'pb-28': lastAdded }">
+  <div class="p-4">
     <p v-if="routine" class="mb-3 text-sm text-muted">
       Elegí los ejercicios para <strong class="text-ink">{{ routine.name }}</strong>. Podés agregar varios seguidos.
     </p>
@@ -94,21 +91,6 @@ const count = computed(() => addedIds.value.length)
       :create-to="q => ({ path: '/ejercicios/nuevo', query: { ...(q ? { nombre: q } : {}), rutina: routineId } })"
       @select="pick"
     />
-  </div>
-
-  <!-- Después de agregar: confirmación y salida a mano, justo arriba de la barra inferior. -->
-  <div
-    v-if="lastAdded"
-    class="fixed inset-x-0 z-10 mx-auto max-w-xl border-t border-line bg-elevated/90 px-4 py-3 shadow-[0_-8px_24px_rgb(0_0_0/0.4)] backdrop-blur-xl"
-    style="bottom: calc(4rem + 1px + env(safe-area-inset-bottom))"
-  >
-    <div class="flex items-center gap-3">
-      <p role="status" class="min-w-0 flex-1 text-sm">
-        <span class="flex items-center gap-1 font-semibold text-ok"><AppIcon name="check" :size="16" />Agregado</span>
-        <span class="block truncate text-muted">{{ lastAdded }} · {{ count === 1 ? '1 ejercicio' : `${count} ejercicios` }} en la rutina</span>
-      </p>
-      <AppButton :to="`/rutinas/${routineId}`">Ver rutina</AppButton>
-    </div>
   </div>
 
   <AppSheet v-model:open="sheetOpen" :title="selected?.name ?? ''">

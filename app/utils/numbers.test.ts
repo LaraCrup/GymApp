@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { clampNumber, formatKg, parseNumber } from './numbers'
+import { clampNumber, formatKg, formatSeconds, parseNumber } from './numbers'
 
 describe('formatKg', () => {
   it('usa coma decimal y no muestra ceros de más', () => {
@@ -32,5 +32,16 @@ describe('clampNumber', () => {
     expect(clampNumber(-2.5, 0, 999)).toBe(0)
     expect(clampNumber(1200, 0, 999)).toBe(999)
     expect(clampNumber(0.1 + 0.2, 0, 999)).toBe(0.3)
+  })
+})
+
+describe('formatSeconds', () => {
+  it.each([
+    [40, '40 seg'],
+    [60, '1 min'],
+    [90, '1:30 min'],
+    [125, '2:05 min'],
+  ])('%i → %s', (s, expected) => {
+    expect(formatSeconds(s)).toBe(expected)
   })
 })
