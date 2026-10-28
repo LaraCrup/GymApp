@@ -19,7 +19,7 @@ const addedIds = computed(() => routine.value?.items.map(i => i.exercise_id) ?? 
 // ── Vista previa del ejercicio elegido ──
 const selected = ref<Exercise | null>(null)
 const sheetOpen = ref(false)
-const settings = ref<ItemSettings>({ sets: 3, reps: 10, seconds: null, weight_kg: 0 })
+const settings = ref<ItemSettings>({ sets: 3, reps: 10, seconds: null, weight_kg: 0, notes: null })
 const saving = ref(false)
 const error = ref('')
 const toast = useToast()
@@ -28,7 +28,7 @@ const alreadyIn = computed(() => !!selected.value && addedIds.value.includes(sel
 
 function pick(exercise: Exercise) {
   selected.value = exercise
-  settings.value = { sets: 3, reps: 10, seconds: null, weight_kg: 0 }
+  settings.value = { sets: 3, reps: 10, seconds: null, weight_kg: 0, notes: null }
   error.value = ''
   sheetOpen.value = true
   void prefillWeight(exercise.id)

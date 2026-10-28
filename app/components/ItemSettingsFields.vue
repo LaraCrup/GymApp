@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import type { ItemSettings } from '~/composables/useRoutines'
 
-// Series, repeticiones (o tiempo) y peso: se usa al agregar un ejercicio y al editarlo.
+// Series, repeticiones (o tiempo), peso y nota: se usa al agregar un ejercicio y al editarlo.
 // Repeticiones vacías = al fallo; segundos con número = por tiempo; peso vacío = peso corporal.
 const settings = defineModel<ItemSettings>({ required: true })
+
+const notesId = useId()
 // En la ficha el peso se cambia con sus propios botones; acá solo hace falta al agregar.
 withDefaults(defineProps<{ withWeight?: boolean }>(), { withWeight: true })
 
@@ -47,6 +49,13 @@ const weight = computed({
   set: n => (settings.value.weight_kg = lastWeight.value = n),
 })
 
+// Lo que no entra en series, reps ni peso. Vacía se guarda como null: el check de la base pide texto.
+// No se recorta mientras se escribe, para poder separar palabras con espacios.
+const notes = computed({
+  get: () => settings.value.notes ?? '',
+  set: t => (settings.value.notes = t.trim() ? t : null),
+})
+
 // El peso sugerido (el de la última vez) puede llegar después de abrir el panel.
 watch(() => settings.value.weight_kg, v => {
   if (v !== null) lastWeight.value = v
@@ -84,7 +93,8 @@ watch(() => settings.value.weight_kg, v => {
           Al fallo: hasta no poder hacer una más
         </p>
       </template>
-      <NumberStepper v-else v-model="seconds" label="Segundos por serie" :min="5" :max="600" :step="5" unit="seg" />
+      <!-- Hasta 3600 (una hora), el tope que acepta la base: con 600 un bloque de 12 min no entraba. -->
+      <NumberStepper v-else v-model="seconds" label="Segundos por serie" :min="5" :max="3600" :step="5" unit="seg" />
     </div>
 
     <div v-if="withWeight" class="flex flex-col gap-1.5">
@@ -96,6 +106,23 @@ watch(() => settings.value.weight_kg, v => {
       <p v-else class="flex min-h-12 items-center justify-center rounded-xl border border-dashed border-primary/40 bg-primary-soft px-3 text-sm font-semibold text-primary-strong">
         Sin peso extra: con tu propio cuerpo
       </p>
+    </div>
+
+    <!-- Para lo que los números de arriba no pueden guardar: metros, pendiente, ritmo, "por lado". -->
+    <div class="flex flex-col gap-1.5">
+      <label :for="notesId" class="text-sm font-semibold">Nota</label>
+      <p :id="`${notesId}-hint`" class="text-sm text-muted">
+        Opcional: «30 m por serie», «inclinación 10-12%», «8 por lado», «bajando en 3 segundos».
+      </p>
+      <!-- text-base (16px) es el mínimo para que iPhone no haga zoom al tocar el campo. -->
+      <textarea
+        :id="notesId"
+        v-model="notes"
+        rows="2"
+        maxlength="200"
+        :aria-describedby="`${notesId}-hint`"
+        class="w-full resize-y rounded-xl border border-line bg-field px-4 py-3 text-base transition outline-none focus:border-primary focus:bg-primary-soft/40 focus:ring-4 focus:ring-primary/15"
+      />
     </div>
   </div>
 </template>

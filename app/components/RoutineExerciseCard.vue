@@ -83,5 +83,8 @@ const { nameOf } = useMuscleGroups()
         <dd class="text-base font-bold">{{ item.weight_kg === null ? 'Sin peso' : formatKg(item.weight_kg) }}</dd>
       </div>
     </dl>
+    <p v-if="item.notes" class="rounded-xl border border-dashed border-line px-3 py-2 text-sm leading-snug text-muted">
+      {{ item.notes }}
+    </p>
   </NuxtLink>
 </template>

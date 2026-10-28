@@ -49,12 +49,18 @@ const { data: item, status: itemStatus, error: itemError, refresh: refreshItem }
 )
 
 const settingsOpen = ref(false)
-const settingsDraft = ref<ItemSettings>({ sets: 3, reps: 10, seconds: null, weight_kg: 0 })
+const settingsDraft = ref<ItemSettings>({ sets: 3, reps: 10, seconds: null, weight_kg: 0, notes: null })
 const savingSettings = ref(false)
 
 function openSettings() {
   if (!item.value) return
-  settingsDraft.value = { sets: item.value.sets, reps: item.value.reps, seconds: item.value.seconds, weight_kg: item.value.weight_kg }
+  settingsDraft.value = {
+    sets: item.value.sets,
+    reps: item.value.reps,
+    seconds: item.value.seconds,
+    weight_kg: item.value.weight_kg,
+    notes: item.value.notes,
+  }
   settingsOpen.value = true
 }
 
@@ -62,9 +68,9 @@ async function saveSettings() {
   if (!item.value) return
   savingSettings.value = true
   try {
-    const { sets, reps, seconds } = settingsDraft.value
-    await routines.updateItem(item.value.id, { sets, reps, seconds })
-    Object.assign(item.value, { sets, reps, seconds })
+    const { sets, reps, seconds, notes } = settingsDraft.value
+    await routines.updateItem(item.value.id, { sets, reps, seconds, notes })
+    Object.assign(item.value, { sets, reps, seconds, notes })
     settingsOpen.value = false
     toast.ok('Guardado')
   }
@@ -186,6 +192,9 @@ async function remove() {
           </span>
           <span class="text-sm font-semibold text-primary">Cambiar</span>
         </button>
+        <p v-if="item.notes" class="-mt-2 rounded-xl border border-dashed border-line px-3 py-2 text-sm leading-snug text-muted">
+          {{ item.notes }}
+        </p>
         <div class="flex flex-col gap-2">
           <div class="-my-2 flex items-center justify-between gap-2">
             <p class="text-sm font-semibold">Peso</p>

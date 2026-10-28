@@ -8,6 +8,7 @@ App web instalable (PWA) para anotar rutinas de gimnasio, pesos y progreso. Priv
 ## Qué hace
 
 - **Rutinas** propias (crear, renombrar, borrar), con ejercicios ordenables y la opción de agruparlos por músculo.
+- **Nota por ejercicio**: lo que no entra en series, reps, tiempo ni peso («30 m por serie», «inclinación 10-12%», «8 por lado»).
 - **Grupos de rutinas** («Gimnasio», «Casa», «Verano 2026»): carpetas que ordenan la lista. Una rutina está en un grupo o en ninguno; borrar el grupo no borra sus rutinas.
 - **Pesos**: botones −2,5 / −1 / +1 / +2,5 (o escribirlo), guardado automático, «la vez anterior».
 - **Historial**: un punto por día y por ejercicio; gráfico y lista en la ficha del ejercicio.
@@ -90,7 +91,7 @@ SUPABASE_SMTP_USER='cuenta@gmail.com' SUPABASE_SMTP_PASS='xxxx xxxx xxxx xxxx' s
 | `exercises` | catálogo con alias y `youtube_id` | todos leen y crean; solo admin edita y borra |
 | `routine_groups` | grupos («carpetas») de rutinas, en orden | cada persona los suyos |
 | `routines` | rutinas, con el grupo al que pertenecen (`group_id`, puede ser vacío) | cada persona las suyas |
-| `routine_exercises` | ejercicio en rutina: orden, series, reps, peso | cada persona los suyos |
+| `routine_exercises` | ejercicio en rutina: orden, series, reps, peso, nota | cada persona los suyos |
 | `weight_logs` | historial: un punto por día por persona y ejercicio | cada persona lee el suyo; lo escribe un trigger |
 
 - Funciones: `search_exercises`, `similar_exercises`, `reorder_routine_exercises`, `reorder_routine_groups`, `previous_weights`, `is_admin`.
