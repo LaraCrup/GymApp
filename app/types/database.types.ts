@@ -80,18 +80,37 @@ isOneToOne: false
       referencedColumns: ["id"]
     }
                   ]
-                },"routines": {
+                },"routine_groups": {
                   Row: {
-                    "created_at": string,"id": string,"name": string,"updated_at": string,"user_id": string
+                    "created_at": string,"id": string,"name": string,"position": number,"updated_at": string,"user_id": string
                   }
                   Insert: {
-                    "created_at"?: string,"id"?: string,"name": string,"updated_at"?: string,"user_id"?: string
+                    "created_at"?: string,"id"?: string,"name": string,"position"?: number,"updated_at"?: string,"user_id"?: string
                   }
                   Update: {
-                    "created_at"?: string,"id"?: string,"name"?: string,"updated_at"?: string,"user_id"?: string
+                    "created_at"?: string,"id"?: string,"name"?: string,"position"?: number,"updated_at"?: string,"user_id"?: string
                   }
                   Relationships: [
                     
+                  ]
+                },"routines": {
+                  Row: {
+                    "created_at": string,"group_id": string | null,"id": string,"name": string,"updated_at": string,"user_id": string
+                  }
+                  Insert: {
+                    "created_at"?: string,"group_id"?: string | null,"id"?: string,"name": string,"updated_at"?: string,"user_id"?: string
+                  }
+                  Update: {
+                    "created_at"?: string,"group_id"?: string | null,"id"?: string,"name"?: string,"updated_at"?: string,"user_id"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "routines_group_id_fkey"
+      columns: ["group_id"]
+isOneToOne: false
+      referencedRelation: "routine_groups"
+      referencedColumns: ["id"]
+    }
                   ]
                 },"weight_logs": {
                   Row: {
@@ -137,6 +156,9 @@ isOneToOne: false
                            },
 "reorder_routine_exercises":
 { Args: { "p_ids": (string)[],"p_routine_id": string }; Returns: undefined
+                           },
+"reorder_routine_groups":
+{ Args: { "p_ids": (string)[] }; Returns: undefined
                            },
 "search_exercises":
 { Args: { "group_id"?: string,"max_results"?: number,"q"?: string }; Returns: {

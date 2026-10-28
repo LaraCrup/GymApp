@@ -44,14 +44,24 @@ export function useRoutines() {
     return data
   }
 
-  async function create(name: string) {
-    const { data, error } = await supabase.from('routines').insert({ name: name.trim() }).select().single()
+  async function create(name: string, groupId: string | null = null) {
+    const { data, error } = await supabase
+      .from('routines')
+      .insert({ name: name.trim(), group_id: groupId })
+      .select()
+      .single()
     if (error) throw error
     return data
   }
 
   async function rename(id: string, name: string) {
     const { error } = await supabase.from('routines').update({ name: name.trim() }).eq('id', id)
+    if (error) throw error
+  }
+
+  /** Mueve la rutina a un grupo, o la saca de todos con `null`. */
+  async function setGroup(id: string, groupId: string | null) {
+    const { error } = await supabase.from('routines').update({ group_id: groupId }).eq('id', id)
     if (error) throw error
   }
 
@@ -86,5 +96,5 @@ export function useRoutines() {
     if (error) throw error
   }
 
-  return { list, get, getItem, create, rename, remove, addItem, updateItem, removeItem, reorder }
+  return { list, get, getItem, create, rename, setGroup, remove, addItem, updateItem, removeItem, reorder }
 }

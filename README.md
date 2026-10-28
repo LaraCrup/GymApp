@@ -8,6 +8,7 @@ App web instalable (PWA) para anotar rutinas de gimnasio, pesos y progreso. Priv
 ## Qué hace
 
 - **Rutinas** propias (crear, renombrar, borrar), con ejercicios ordenables y la opción de agruparlos por músculo.
+- **Grupos de rutinas** («Gimnasio», «Casa», «Verano 2026»): carpetas que ordenan la lista. Una rutina está en un grupo o en ninguno; borrar el grupo no borra sus rutinas.
 - **Pesos**: botones −2,5 / −1 / +1 / +2,5 (o escribirlo), guardado automático, «la vez anterior».
 - **Historial**: un punto por día y por ejercicio; gráfico y lista en la ficha del ejercicio.
 - **Catálogo compartido** con alias («Remo con barra» = «Remo inclinado» = «Bent over row»), búsqueda sin tildes y tolerante a errores, videos de YouTube embebidos (`youtube-nocookie`, carga al tocar).
@@ -87,11 +88,12 @@ SUPABASE_SMTP_USER='cuenta@gmail.com' SUPABASE_SMTP_PASS='xxxx xxxx xxxx xxxx' s
 |---|---|---|
 | `muscle_groups` | 11 grupos fijos | todos leen |
 | `exercises` | catálogo con alias y `youtube_id` | todos leen y crean; solo admin edita y borra |
-| `routines` | rutinas | cada persona las suyas |
+| `routine_groups` | grupos («carpetas») de rutinas, en orden | cada persona los suyos |
+| `routines` | rutinas, con el grupo al que pertenecen (`group_id`, puede ser vacío) | cada persona las suyas |
 | `routine_exercises` | ejercicio en rutina: orden, series, reps, peso | cada persona los suyos |
 | `weight_logs` | historial: un punto por día por persona y ejercicio | cada persona lee el suyo; lo escribe un trigger |
 
-- Funciones: `search_exercises`, `similar_exercises`, `reorder_routine_exercises`, `previous_weights`, `is_admin`.
+- Funciones: `search_exercises`, `similar_exercises`, `reorder_routine_exercises`, `reorder_routine_groups`, `previous_weights`, `is_admin`.
 - No se puede borrar del catálogo un ejercicio que alguien usa en una rutina o tiene en su historial.
 - `supabase db reset` recrea la base local (migraciones + catálogo inicial de 67 ejercicios con video de YouTube verificado).
 - `npm run db:types` regenera `app/types/database.types.ts`.

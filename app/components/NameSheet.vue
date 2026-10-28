@@ -1,7 +1,24 @@
 <script setup lang="ts">
-// Crear o renombrar una rutina: un solo campo, no merece una pantalla aparte.
+// Poner o cambiar un nombre (una rutina, un grupo): un solo campo, no merece una pantalla aparte.
 const open = defineModel<boolean>('open', { required: true })
-const props = defineProps<{ title: string; submitLabel: string; initialName?: string; loading?: boolean; error?: string }>()
+const props = withDefaults(
+  defineProps<{
+    title: string
+    submitLabel: string
+    label?: string
+    placeholder?: string
+    /** Qué decir si lo dejan vacío. */
+    emptyError?: string
+    initialName?: string
+    loading?: boolean
+    error?: string
+  }>(),
+  {
+    label: 'Nombre de la rutina',
+    placeholder: 'Ej: Día 1 - Piernas',
+    emptyError: 'Poné un nombre, por ejemplo «Día 1 - Piernas».',
+  },
+)
 const emit = defineEmits<{ save: [name: string] }>()
 
 const name = ref('')
@@ -14,7 +31,7 @@ watch(open, value => {
 }, { immediate: true })
 
 function submit() {
-  localError.value = name.value.trim() ? '' : 'Poné un nombre, por ejemplo «Día 1 - Piernas».'
+  localError.value = name.value.trim() ? '' : props.emptyError
   if (!localError.value) emit('save', name.value.trim())
 }
 </script>
@@ -24,9 +41,9 @@ function submit() {
     <form class="flex flex-col gap-4" novalidate @submit.prevent="submit">
       <AppInput
         v-model="name"
-        label="Nombre de la rutina"
+        :label="label"
         autocomplete="off"
-        placeholder="Ej: Día 1 - Piernas"
+        :placeholder="placeholder"
         enterkeyhint="done"
         autofocus
         :error="localError"

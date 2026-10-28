@@ -1,23 +1,30 @@
 <script setup lang="ts">
 import type { RoutineItem } from '~/composables/useRoutines'
+import type { RoutineGroup } from '~/composables/useRoutineGroups'
 
 const route = useRoute()
 const id = route.params.id as string
 
 const routines = useRoutines()
+const groups = useRoutineGroups()
 const muscleGroups = useMuscleGroups()
 const toast = useToast()
 const { confirm } = useConfirm()
+
+const groupList = ref<RoutineGroup[]>([])
 
 // deep: en Nuxt 4 los datos son shallowRef por defecto; acá se editan en el lugar
 // (series, orden, nombre) y la pantalla tiene que reaccionar a esos cambios.
 const { data: routine, status, error, refresh } = useLazyAsyncData(`routine-${id}`, async () => {
   await muscleGroups.load()
-  return routines.get(id)
+  const [list, data] = await Promise.all([groups.list(), routines.get(id)])
+  groupList.value = list
+  return data
 }, { deep: true })
 useHead(() => ({ title: routine.value?.name ?? 'Rutina' }))
 
 const items = computed(() => routine.value?.items ?? [])
+const groupName = computed(() => groupList.value.find(g => g.id === routine.value?.group_id)?.name ?? null)
 
 const editing = ref(false)
 
@@ -76,6 +83,45 @@ async function rename(name: string) {
   }
   finally {
     savingName.value = false
+  }
+}
+
+// ── Grupo ──
+const moving = ref(false)
+const savingGroup = ref(false)
+const groupError = ref('')
+
+async function moveTo(groupId: string | null) {
+  if (!routine.value) return
+  savingGroup.value = true
+  groupError.value = ''
+  try {
+    await routines.setGroup(id, groupId)
+    routine.value.group_id = groupId
+    moving.value = false
+    toast.ok(groupId ? 'Rutina movida' : 'Rutina sin grupo')
+  }
+  catch (e) {
+    groupError.value = friendlyError(e)
+  }
+  finally {
+    savingGroup.value = false
+  }
+}
+
+async function createGroupAndMove(name: string) {
+  savingGroup.value = true
+  groupError.value = ''
+  try {
+    const group = await groups.create(name)
+    groupList.value.push(group)
+    await moveTo(group.id)
+  }
+  catch (e) {
+    groupError.value = friendlyError(e)
+  }
+  finally {
+    savingGroup.value = false
   }
 }
 
@@ -144,6 +190,15 @@ async function removeRoutine() {
   </EmptyState>
 
   <div v-else class="flex flex-col gap-4 p-4">
+    <!-- En qué grupo está, para no perderse al venir de una lista larga. -->
+    <p
+      v-if="groupName && !editing"
+      class="flex items-center gap-1.5 self-start rounded-full border border-primary/30 bg-brand-soft px-3 py-1.5 text-sm font-semibold text-primary-strong"
+    >
+      <AppIcon name="folder" :size="16" />
+      {{ groupName }}
+    </p>
+
     <EmptyState
       v-if="!items.length && !editing"
       title="Esta rutina está vacía"
@@ -169,6 +224,21 @@ async function removeRoutine() {
           @click="renameError = ''; renaming = true"
         >
           <AppIcon name="edit" :size="20" />
+        </button>
+      </div>
+      <!-- En qué grupo ("carpeta") está la rutina dentro de «Mis rutinas». -->
+      <div v-if="editing" class="flex items-center gap-3">
+        <div class="min-w-0 flex-1">
+          <p class="text-xs text-muted">Grupo</p>
+          <p class="truncate font-semibold">{{ groupName ?? 'Sin grupo' }}</p>
+        </div>
+        <button
+          type="button"
+          class="flex size-11 shrink-0 items-center justify-center rounded-full border border-primary/40 bg-primary-soft text-primary active:bg-primary/25"
+          aria-label="Cambiar el grupo"
+          @click="groupError = ''; moving = true"
+        >
+          <AppIcon name="folder" :size="20" />
         </button>
       </div>
       <div class="flex flex-col gap-2">
@@ -203,7 +273,7 @@ async function removeRoutine() {
     </template>
   </div>
 
-  <RoutineNameSheet
+  <NameSheet
     v-model:open="renaming"
     title="Cambiar el nombre"
     submit-label="Guardar"
@@ -211,5 +281,15 @@ async function removeRoutine() {
     :loading="savingName"
     :error="renameError"
     @save="rename"
+  />
+
+  <RoutineGroupSheet
+    v-model:open="moving"
+    :groups="groupList"
+    :current-id="routine?.group_id ?? null"
+    :loading="savingGroup"
+    :error="groupError"
+    @select="moveTo"
+    @create="createGroupAndMove"
   />
 </template>
